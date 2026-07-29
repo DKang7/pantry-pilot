@@ -7,7 +7,6 @@ class Settings(BaseSettings):
     ENV: str = "development"
     DATABASE_URL: str = "postgresql://user:password@localhost:5432/pantrypilot"
 
-    class Config:
-        env_file = ".env"
+    model_config = SettingsConfigDict(env_file=".env")
 
 settings = Settings()
