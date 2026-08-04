@@ -12,6 +12,7 @@ frontend/out/
 backend/__pycache__/
 backend/*.pyc
 backend/.venv/
+backend/venv/
 backend/.pytest_cache/
 
 # OS / Docker
