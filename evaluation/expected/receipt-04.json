@@ -1,0 +1,14 @@
+{
+  "receiptId": "receipt-04",
+  "expectedDate": "2024-05-18",
+  "expectedItems": [
+    { "name": "Fresh Salmon Fillet", "quantity": 1, "price": 16.99 },
+    { "name": "Dozen Eggs", "quantity": 1, "price": 5.29 },
+    { "name": "Asparagus Bunch", "quantity": 1, "price": 4.49 },
+    { "name": "Loaf of Sourdough", "quantity": 1, "price": 4.99 },
+    { "name": "Olive Oil (500 ml)", "quantity": 1, "price": 11.99 },
+    { "name": "Butter (1 lb)", "quantity": 1, "price": 6.49 },
+    { "name": "Avocados (Bag of 4)", "quantity": 1, "price": 5.99 }
+  ],
+  "excludedLines": ["Subtotal: $56.23", "Sales Tax: $2.81", "Total: $59.04"]
+}

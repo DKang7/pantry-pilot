@@ -1,0 +1,17 @@
+{
+  "receiptId": "receipt-01",
+  "expectedDate": "2024-05-18",
+  "expectedItems": [
+    { "name": "Organic Bananas", "quantity": 1, "price": 2.19 },
+    { "name": "Whole Milk Gal", "quantity": 1, "price": 4.89 },
+    { "name": "Oatmeal (Old Fashioned)", "quantity": 1, "price": 3.49 },
+    { "name": "Large Eggs (1 Dozen)", "quantity": 1, "price": 5.29 },
+    { "name": "Cans Garbanzo Beans", "quantity": 2, "price": 3.56 },
+    { "name": "Quinoa (1 lb Bag)", "quantity": 1, "price": 6.79 },
+    { "name": "Peanut Butter (16 oz)", "quantity": 1, "price": 4.19 },
+    { "name": "Dried Pasta (Spaghetti)", "quantity": 1, "price": 2.39 },
+    { "name": "Fresh Spinach Bag", "quantity": 1, "price": 3.69 },
+    { "name": "Diced Tomatoes Can", "quantity": 1, "price": 1.59 }
+  ],
+  "excludedLines": ["Subtotal: $38.07", "Sales Tax: $1.81", "Total: $39.88"]
+}

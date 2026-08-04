@@ -1,0 +1,14 @@
+{
+  "receiptId": "receipt-05",
+  "expectedDate": "2024-05-18",
+  "expectedItems": [
+    { "name": "Chicken Thighs", "quantity": 1, "price": 9.49 },
+    { "name": "Granola Bars Box", "quantity": 1, "price": 5.99 },
+    { "name": "Can Tuna", "quantity": 1, "price": 1.89 },
+    { "name": "Broccoli Crowns", "quantity": 1, "price": 3.29 },
+    { "name": "Brown Rice (2 lb)", "quantity": 1, "price": 4.19 },
+    { "name": "Pasta Sauce Jar", "quantity": 1, "price": 3.99 },
+    { "name": "Maple Syrup (12 oz)", "quantity": 1, "price": 9.99 }
+  ],
+  "excludedLines": ["Subtotal: $38.83", "Sales Tax: $1.94", "Total: $40.77"]
+}

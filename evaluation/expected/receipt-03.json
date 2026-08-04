@@ -1,0 +1,15 @@
+{
+  "receiptId": "receipt-03",
+  "expectedDate": "2024-05-18",
+  "expectedItems": [
+    { "name": "Organic Apples (3 lb Bag)", "quantity": 1, "price": 6.99 },
+    { "name": "Cheddar Cheese Block", "quantity": 1, "price": 4.89 },
+    { "name": "Box of Cereal", "quantity": 1, "price": 5.19 },
+    { "name": "Hummus", "quantity": 1, "price": 3.99 },
+    { "name": "Loaf of Whole Wheat Bread", "quantity": 1, "price": 3.69 },
+    { "name": "Canned Peaches", "quantity": 1, "price": 1.49 },
+    { "name": "Canned Peaches", "quantity": 1, "price": 1.49 },
+    { "name": "Coffee Beans (12 oz)", "quantity": 1, "price": 14.99 }
+  ],
+  "excludedLines": ["Subtotal: $41.23", "Sales Tax: $2.06", "Total: $43.29"]
+}

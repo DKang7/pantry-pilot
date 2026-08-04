@@ -1,0 +1,79 @@
+```json
+{
+  "storeName": "PantryPilot Foods",
+  "purchaseDate": "2024-05-18",
+  "currency": "USD",
+  "items": [
+    {
+      "rawText": "1 x ORGANIC BANANAS $2.19",
+      "name": "Organic Bananas",
+      "quantity": 1.0,
+      "unit": "item",
+      "price": 2.19
+    },
+    {
+      "rawText": "1 x WHOLE MILK GAL $4.89",
+      "name": "Whole Milk",
+      "quantity": 1.0,
+      "unit": "gal",
+      "price": 4.89
+    },
+    {
+      "rawText": "1 x OATMEAL (OLD FAS $3.49",
+      "name": "Old Fashioned Oatmeal",
+      "quantity": 1.0,
+      "unit": "item",
+      "price": 3.49
+    },
+    {
+      "rawText": "1 x LARGE EGGS (1 DOZEN) $5.29",
+      "name": "Large Eggs",
+      "quantity": 1.0,
+      "unit": "dozen",
+      "price": 5.29
+    },
+    {
+      "rawText": "2 x CANS GARBANZO BEANS ($1.78 ea.) $3.56",
+      "name": "Garbanzo Beans",
+      "quantity": 2.0,
+      "unit": "item",
+      "price": 3.56
+    },
+    {
+      "rawText": "1 x QUINOA (1 LB BAG) $6.79",
+      "name": "Quinoa",
+      "quantity": 1.0,
+      "unit": "lb",
+      "price": 6.79
+    },
+    {
+      "rawText": "1 x PEANUT BUTTER (16 OZ) $4.19",
+      "name": "Peanut Butter 16 oz",
+      "quantity": 1.0,
+      "unit": "item",
+      "price": 4.19
+    },
+    {
+      "rawText": "1 x DRIED PASTA (SPAGHETTI) $2.39",
+      "name": "Dried Pasta Spaghetti",
+      "quantity": 1.0,
+      "unit": "item",
+      "price": 2.39
+    },
+    {
+      "rawText": "1 x FRESH SPINACH BAG $3.69",
+      "name": "Fresh Spinach",
+      "quantity": 1.0,
+      "unit": "item",
+      "price": 3.69
+    },
+    {
+      "rawText": "1 x DICED TOMATOES CAN $1.59",
+      "name": "Diced Tomatoes",
+      "quantity": 1.0,
+      "unit": "item",
+      "price": 1.59
+    }
+  ]
+}
+```

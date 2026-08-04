@@ -1,0 +1,14 @@
+{
+  "receiptId": "receipt-02",
+  "expectedDate": "2024-05-18",
+  "expectedItems": [
+    { "name": "Organic Sweet Potatoes", "quantity": 1, "price": 3.49 },
+    { "name": "Whole Chicken", "quantity": 1, "price": 12.99 },
+    { "name": "Greek Yogurt (32 oz)", "quantity": 1, "price": 5.49 },
+    { "name": "Can Black Beans", "quantity": 1, "price": 1.19 },
+    { "name": "Ground Beef (1 lb)", "quantity": 1, "price": 7.99 },
+    { "name": "Jasmine Rice (5 lb)", "quantity": 1, "price": 9.99 },
+    { "name": "Canned Corn", "quantity": 1, "price": 0.99 }
+  ],
+  "excludedLines": ["Subtotal: $42.13", "Sales Tax: $2.11", "Total: $44.24"]
+}
