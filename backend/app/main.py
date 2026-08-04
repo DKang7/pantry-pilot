@@ -16,6 +16,10 @@ load_dotenv()
 
 app = FastAPI(title=settings.PROJECT_NAME)
 
+@app.get("/")
+def health_check():
+    return {"status": "PantryPilot API is live"}
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
