@@ -44,7 +44,7 @@ export default function UploadReceiptPage() {
 
       const data = await response.json();
       
-      // Redirect to the review screen
+      // Redirect to the review screen using the new folder structure
       if (data.receiptId) {
         router.push(`/receipts/${data.receiptId}/review`);
       }
