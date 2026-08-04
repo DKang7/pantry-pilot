@@ -9,12 +9,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from supabase import create_client, Client
 from app.core.config import settings
+from google import genai
 from PIL import Image
-
-try:
-    from google import genai
-except ImportError:
-    genai = None
 
 load_dotenv()
 
@@ -34,7 +30,7 @@ key: str = os.environ.get("SUPABASE_KEY", "")
 supabase: Client = create_client(url, key)
 
 # Initialize Gemini Client (automatically reads GEMINI_API_KEY from environment)
-client = genai.Client() if genai is not None else None
+client = genai.Client()
 
 # Local storage directory for uploaded receipt files
 UPLOAD_DIR = "uploads"
@@ -77,9 +73,6 @@ async def upload_receipt(file: UploadFile = File(...)):
     allowed_types = ["image/jpeg", "image/png", "application/pdf"]
     if file.content_type not in allowed_types:
         raise HTTPException(status_code=400, detail="File type not supported. Please upload a JPEG, PNG, or PDF.")
-
-    if client is None:
-        raise HTTPException(status_code=503, detail="Receipt extraction is unavailable because the Gemini SDK is not installed.")
 
     # 2. Save file locally with secure name
     file_extension = file.filename.split(".")[-1]

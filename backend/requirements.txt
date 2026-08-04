@@ -6,4 +6,3 @@ python-dotenv==1.0.1
 pytest==8.2.2
 httpx==0.27.0
 supabase==2.4.6
-google-genai==2.16.0
