@@ -1,94 +1,326 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
+import { createClient } from '@supabase/supabase-js';
 
-export default function Home() {
-  const [items, setItems] = useState([]);
-  const [itemName, setItemName] = useState("");
-  const [quantity, setQuantity] = useState("1");
+// Initialize Supabase for the frontend
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+);
+
+type PantryItem = {
+  id: string;
+  name: string;
+  current_quantity: number;
+  unit: string;
+  category: string;
+  purchase_date: string;
+  source_type: string;
+};
+
+export default function PantryDashboard() {
+  // Auth State
+  const [session, setSession] = useState<any>(null);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [authLoading, setAuthLoading] = useState(true);
+
+  // Dashboard State
+  const [items, setItems] = useState<PantryItem[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [editingItem, setEditingItem] = useState<PantryItem | null>(null);
+  
+  // Form States
+  const [newName, setNewName] = useState('');
+  const [newQuantity, setNewQuantity] = useState('');
+  const [newUnit, setNewUnit] = useState('each');
+  const [newCategory, setNewCategory] = useState('pantry');
+  const [newDate, setNewDate] = useState(new Date().toISOString().split('T')[0]);
+  const [editQuantity, setEditQuantity] = useState('');
+  const [editNote, setEditNote] = useState('');
 
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-
-  // Fetch the inventory list when the page loads
+  // 1. Listen for Auth Changes
   useEffect(() => {
-    fetch(`${API_URL}/api/inventory`)
-      .then((res) => res.json())
-      .then((data) => setItems(data))
-      .catch(() => setError("Failed to load inventory"));
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setAuthLoading(false);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // 2. Fetch Inventory (Now requires an Auth Token)
+  const fetchInventory = async () => {
+    if (!session) return;
     setLoading(true);
-    setError("");
-
-    if (!itemName) {
-      setError("Item name is required");
-      setLoading(false);
-      return;
-    }
-
     try {
-      const res = await fetch(`${API_URL}/api/inventory`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ item_name: itemName, quantity: parseInt(quantity) }),
+      const response = await fetch('http://localhost:8000/api/inventory', {
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`
+        }
       });
-
-      if (!res.ok) throw new Error("Failed to save item");
-
-      // Reset the form and fetch the updated database state
-      setItemName("");
-      setQuantity("1");
-      const newData = await fetch(`${API_URL}/api/inventory`).then((res) => res.json());
-      setItems(newData);
-    } catch (err: any) {
-      setError(err.message);
+      if (response.ok) {
+        const data = await response.json();
+        setItems(data);
+      }
+    } catch (err) {
+      console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
+  useEffect(() => {
+    if (session) {
+      fetchInventory();
+    }
+  }, [session]);
+
+  // Auth Handlers
+  const handleSignUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const { error } = await supabase.auth.signUp({ email, password });
+    if (error) alert(error.message);
+    else alert('Success! Check your email (or just log in if email confirmation is disabled in Supabase).');
+  };
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) alert(error.message);
+  };
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    setItems([]);
+  };
+
+  // Action Handlers (Adding Token to Headers)
+  const handleManualAdd = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const payload = {
+      name: newName,
+      quantity: parseFloat(newQuantity),
+      unit: newUnit,
+      category: newCategory,
+      purchase_date: newDate
+    };
+
+    const response = await fetch('http://localhost:8000/api/inventory/manual', {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session.access_token}`
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (response.ok) {
+      setShowAddModal(false);
+      fetchInventory(); 
+      setNewName('');
+      setNewQuantity('');
+      setNewUnit('each');
+      setNewCategory('pantry');
+      setNewDate(new Date().toISOString().split('T')[0]);
+    }
+  };
+
+  const handleConsume = async (itemId: string, currentQty: number) => {
+    const amountToConsume = currentQty >= 1 ? 1 : currentQty;
+    const payload = { action_type: 'consume', amount: amountToConsume, note: 'Quick consume from dashboard' };
+
+    const response = await fetch(`http://localhost:8000/api/inventory/${itemId}/action`, {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session.access_token}`
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (response.ok) fetchInventory();
+  };
+
+  const handleAdjust = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingItem) return;
+
+    const payload = {
+      action_type: 'adjust',
+      amount: parseFloat(editQuantity),
+      note: editNote || 'Manual adjustment'
+    };
+
+    const response = await fetch(`http://localhost:8000/api/inventory/${editingItem.id}/action`, {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session.access_token}`
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (response.ok) {
+      setEditingItem(null);
+      fetchInventory();
+    }
+  };
+
+  const openEditModal = (item: PantryItem) => {
+    setEditingItem(item);
+    setEditQuantity(item.current_quantity.toString());
+    setEditNote('');
+  };
+
+  if (authLoading) return <div className="p-8 text-center text-gray-500">Loading authentication...</div>;
+
+  // --- LOGIN SCREEN ---
+  if (!session) {
+    return (
+      <div className="max-w-md mx-auto mt-20 p-6 bg-white rounded-lg shadow-md text-black">
+        <h1 className="text-2xl font-bold mb-6 text-center">Welcome to PantryPilot</h1>
+        <form className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Email</label>
+            <input type="email" value={email} onChange={e => setEmail(e.target.value)} className="mt-1 w-full border p-2 rounded" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Password</label>
+            <input type="password" value={password} onChange={e => setPassword(e.target.value)} className="mt-1 w-full border p-2 rounded" />
+          </div>
+          <div className="flex gap-4 pt-4">
+            <button onClick={handleLogin} className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700 font-medium">Log In</button>
+            <button onClick={handleSignUp} className="flex-1 bg-gray-200 text-gray-800 py-2 rounded hover:bg-gray-300 font-medium">Sign Up</button>
+          </div>
+        </form>
+      </div>
+    );
+  }
+
+  // --- DASHBOARD SCREEN ---
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
-      <h1 className="text-2xl font-bold mb-4 text-black">PantryPilot Inventory</h1>
-      
-      {error && <div className="mb-4 text-red-500 text-sm">{error}</div>}
+    <div className="max-w-5xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md text-black">
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <h1 className="text-2xl font-bold">Pantry Inventory</h1>
+          <p className="text-sm text-gray-500 mt-1">Logged in as {session.user.email}</p>
+        </div>
+        <div className="space-x-4">
+          <button onClick={() => setShowAddModal(true)} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm font-medium">
+            + Add Item Manually
+          </button>
+          <button onClick={handleSignOut} className="bg-red-50 text-red-600 px-4 py-2 rounded hover:bg-red-100 text-sm font-medium border border-red-200">
+            Log Out
+          </button>
+        </div>
+      </div>
 
-      <form onSubmit={handleSubmit} className="mb-6 flex gap-2">
-        <input
-          type="text"
-          placeholder="Item name (e.g. Milk)"
-          value={itemName}
-          onChange={(e) => setItemName(e.target.value)}
-          className="border p-2 flex-1 rounded text-black"
-        />
-        <input
-          type="number"
-          min="1"
-          value={quantity}
-          onChange={(e) => setQuantity(e.target.value)}
-          className="border p-2 w-20 rounded text-black"
-        />
-        <button
-          type="submit"
-          disabled={loading}
-          className="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50"
-        >
-          {loading ? "Saving..." : "Add Item"}
-        </button>
-      </form>
+      {loading ? (
+        <div className="p-8 text-center text-gray-500">Loading pantry data...</div>
+      ) : items.length === 0 ? (
+        <div className="text-center p-10 border-2 border-dashed border-gray-300 rounded-lg text-gray-500">
+          Your pantry is currently empty.
+        </div>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-gray-100 border-b-2 border-gray-200">
+                <th className="p-3 text-sm font-semibold text-gray-700">Item</th>
+                <th className="p-3 text-sm font-semibold text-gray-700">Quantity</th>
+                <th className="p-3 text-sm font-semibold text-gray-700">Category</th>
+                <th className="p-3 text-sm font-semibold text-gray-700">Added</th>
+                <th className="p-3 text-sm font-semibold text-gray-700">Source</th>
+                <th className="p-3 text-sm font-semibold text-gray-700">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.map((item) => (
+                <tr key={item.id} className="border-b border-gray-100 hover:bg-gray-50">
+                  <td className="p-3 font-medium text-gray-900">{item.name}</td>
+                  <td className="p-3 text-gray-700">{item.current_quantity} {item.unit}</td>
+                  <td className="p-3 text-gray-700 capitalize">{item.category || '-'}</td>
+                  <td className="p-3 text-gray-700">{item.purchase_date || '-'}</td>
+                  <td className="p-3 text-gray-700 capitalize">{item.source_type}</td>
+                  <td className="p-3 space-x-2">
+                    <button onClick={() => handleConsume(item.id, item.current_quantity)} className="text-blue-600 hover:underline text-sm font-medium">Consume 1</button>
+                    <button onClick={() => openEditModal(item)} className="text-gray-500 hover:underline text-sm font-medium">Edit</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
-      <ul>
-        {items.map((item: any) => (
-          <li key={item.id} className="border-b py-2 flex justify-between text-black">
-            <span>{item.item_name}</span>
-            <span className="text-gray-500">Qty: {item.quantity}</span>
-          </li>
-        ))}
-      </ul>
+      {/* Add Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+            <h2 className="text-xl font-bold mb-4">Add Item Manually</h2>
+            <form onSubmit={handleManualAdd} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Item Name</label>
+                <input required type="text" value={newName} onChange={e => setNewName(e.target.value)} className="mt-1 w-full border p-2 rounded" />
+              </div>
+              <div className="flex gap-4">
+                <div className="flex-1">
+                  <label className="block text-sm font-medium text-gray-700">Quantity</label>
+                  <input required type="number" step="0.01" min="0" value={newQuantity} onChange={e => setNewQuantity(e.target.value)} className="mt-1 w-full border p-2 rounded" />
+                </div>
+                <div className="flex-1">
+                  <label className="block text-sm font-medium text-gray-700">Unit</label>
+                  <input required type="text" value={newUnit} onChange={e => setNewUnit(e.target.value)} placeholder="e.g. oz, boxes" className="mt-1 w-full border p-2 rounded" />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Category</label>
+                <select value={newCategory} onChange={e => setNewCategory(e.target.value)} className="mt-1 w-full border p-2 rounded">
+                  <option value="produce">Produce</option>
+                  <option value="dairy">Dairy</option>
+                  <option value="meat">Meat</option>
+                  <option value="pantry">Pantry</option>
+                  <option value="snacks">Snacks</option>
+                </select>
+              </div>
+              <div className="flex justify-end gap-2 mt-6">
+                <button type="button" onClick={() => setShowAddModal(false)} className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded">Cancel</button>
+                <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Save Item</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Modal */}
+      {editingItem && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+            <h2 className="text-xl font-bold mb-4">Adjust {editingItem.name}</h2>
+            <form onSubmit={handleAdjust} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">New Total Quantity ({editingItem.unit})</label>
+                <input required type="number" step="0.01" min="0" value={editQuantity} onChange={e => setEditQuantity(e.target.value)} className="mt-1 w-full border p-2 rounded" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Reason for change (optional)</label>
+                <input type="text" value={editNote} onChange={e => setEditNote(e.target.value)} placeholder="e.g. Dropped one, typo" className="mt-1 w-full border p-2 rounded" />
+              </div>
+              <div className="flex justify-end gap-2 mt-6">
+                <button type="button" onClick={() => setEditingItem(null)} className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded">Cancel</button>
+                <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Update Item</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
