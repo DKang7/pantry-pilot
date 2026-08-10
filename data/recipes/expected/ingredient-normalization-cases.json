@@ -1,0 +1,968 @@
+[
+  {
+    "rawText": "3 cups cooked rice",
+    "expectedName": "rice",
+    "expectedQuantity": 3,
+    "expectedUnit": "cup",
+    "expectedPreparation": "cooked"
+  },
+  {
+    "rawText": "2 large eggs",
+    "expectedName": "eggs",
+    "expectedQuantity": 2,
+    "expectedUnit": null,
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1 cup diced carrots",
+    "expectedName": "carrots",
+    "expectedQuantity": 1,
+    "expectedUnit": "cup",
+    "expectedPreparation": "diced"
+  },
+  {
+    "rawText": "1/2 cup frozen peas",
+    "expectedName": "peas",
+    "expectedQuantity": 0.5,
+    "expectedUnit": "cup",
+    "expectedPreparation": "frozen"
+  },
+  {
+    "rawText": "2 tbsp soy sauce",
+    "expectedName": "soy sauce",
+    "expectedQuantity": 2,
+    "expectedUnit": "tbsp",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1 slice bread",
+    "expectedName": "bread",
+    "expectedQuantity": 1,
+    "expectedUnit": "slice",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1/2 avocado",
+    "expectedName": "avocado",
+    "expectedQuantity": 0.5,
+    "expectedUnit": null,
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "Pinch of salt",
+    "expectedName": "salt",
+    "expectedQuantity": 1,
+    "expectedUnit": "pinch",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "Pinch of red pepper flakes",
+    "expectedName": "red pepper flakes",
+    "expectedQuantity": 1,
+    "expectedUnit": "pinch",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "2 cans crushed tomatoes",
+    "expectedName": "tomatoes",
+    "expectedQuantity": 2,
+    "expectedUnit": "can",
+    "expectedPreparation": "crushed"
+  },
+  {
+    "rawText": "1 onion, chopped",
+    "expectedName": "onion",
+    "expectedQuantity": 1,
+    "expectedUnit": null,
+    "expectedPreparation": "chopped"
+  },
+  {
+    "rawText": "2 cloves garlic",
+    "expectedName": "garlic",
+    "expectedQuantity": 2,
+    "expectedUnit": "clove",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1/2 cup fresh basil",
+    "expectedName": "basil",
+    "expectedQuantity": 0.5,
+    "expectedUnit": "cup",
+    "expectedPreparation": "fresh"
+  },
+  {
+    "rawText": "1/2 cup heavy cream",
+    "expectedName": "heavy cream",
+    "expectedQuantity": 0.5,
+    "expectedUnit": "cup",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "2 slices bread",
+    "expectedName": "bread",
+    "expectedQuantity": 2,
+    "expectedUnit": "slice",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "2 slices cheddar cheese",
+    "expectedName": "cheddar cheese",
+    "expectedQuantity": 2,
+    "expectedUnit": "slice",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1 tbsp butter",
+    "expectedName": "butter",
+    "expectedQuantity": 1,
+    "expectedUnit": "tbsp",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1 lb ground beef",
+    "expectedName": "ground beef",
+    "expectedQuantity": 1,
+    "expectedUnit": "lb",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1 pkt taco seasoning",
+    "expectedName": "taco seasoning",
+    "expectedQuantity": 1,
+    "expectedUnit": "pkt",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "8 taco shells",
+    "expectedName": "taco shells",
+    "expectedQuantity": 8,
+    "expectedUnit": null,
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1/2 cup shredded cheese",
+    "expectedName": "cheese",
+    "expectedQuantity": 0.5,
+    "expectedUnit": "cup",
+    "expectedPreparation": "shredded"
+  },
+  {
+    "rawText": "1/4 cup diced tomatoes",
+    "expectedName": "tomatoes",
+    "expectedQuantity": 0.25,
+    "expectedUnit": "cup",
+    "expectedPreparation": "diced"
+  },
+  {
+    "rawText": "1 lb chicken breast, sliced",
+    "expectedName": "chicken breast",
+    "expectedQuantity": 1,
+    "expectedUnit": "lb",
+    "expectedPreparation": "sliced"
+  },
+  {
+    "rawText": "2 cups broccoli florets",
+    "expectedName": "broccoli florets",
+    "expectedQuantity": 2,
+    "expectedUnit": "cup",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1 bell pepper, sliced",
+    "expectedName": "bell pepper",
+    "expectedQuantity": 1,
+    "expectedUnit": null,
+    "expectedPreparation": "sliced"
+  },
+  {
+    "rawText": "3 tbsp soy sauce",
+    "expectedName": "soy sauce",
+    "expectedQuantity": 3,
+    "expectedUnit": "tbsp",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1 tbsp sesame oil",
+    "expectedName": "sesame oil",
+    "expectedQuantity": 1,
+    "expectedUnit": "tbsp",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1 cup rolled oats",
+    "expectedName": "rolled oats",
+    "expectedQuantity": 1,
+    "expectedUnit": "cup",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "2 cups water or milk",
+    "expectedName": "water or milk",
+    "expectedQuantity": 2,
+    "expectedUnit": "cup",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1 tbsp honey",
+    "expectedName": "honey",
+    "expectedQuantity": 1,
+    "expectedUnit": "tbsp",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1/4 cup berries",
+    "expectedName": "berries",
+    "expectedQuantity": 0.25,
+    "expectedUnit": "cup",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "2 tomatoes, sliced",
+    "expectedName": "tomatoes",
+    "expectedQuantity": 2,
+    "expectedUnit": null,
+    "expectedPreparation": "sliced"
+  },
+  {
+    "rawText": "8 oz fresh mozzarella, sliced",
+    "expectedName": "fresh mozzarella",
+    "expectedQuantity": 8,
+    "expectedUnit": "oz",
+    "expectedPreparation": "sliced"
+  },
+  {
+    "rawText": "Fresh basil leaves",
+    "expectedName": "basil leaves",
+    "expectedQuantity": null,
+    "expectedUnit": null,
+    "expectedPreparation": "fresh"
+  },
+  {
+    "rawText": "Balsamic glaze",
+    "expectedName": "balsamic glaze",
+    "expectedQuantity": null,
+    "expectedUnit": null,
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1 cup flour",
+    "expectedName": "flour",
+    "expectedQuantity": 1,
+    "expectedUnit": "cup",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1 cup milk",
+    "expectedName": "milk",
+    "expectedQuantity": 1,
+    "expectedUnit": "cup",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1 egg",
+    "expectedName": "egg",
+    "expectedQuantity": 1,
+    "expectedUnit": null,
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1 tbsp baking powder",
+    "expectedName": "baking powder",
+    "expectedQuantity": 1,
+    "expectedUnit": "tbsp",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "2 tbsp sugar",
+    "expectedName": "sugar",
+    "expectedQuantity": 2,
+    "expectedUnit": "tbsp",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1 lb shrimp",
+    "expectedName": "shrimp",
+    "expectedQuantity": 1,
+    "expectedUnit": "lb",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "8 oz linguine",
+    "expectedName": "linguine",
+    "expectedQuantity": 8,
+    "expectedUnit": "oz",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "4 cloves garlic",
+    "expectedName": "garlic",
+    "expectedQuantity": 4,
+    "expectedUnit": "clove",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1/4 cup butter",
+    "expectedName": "butter",
+    "expectedQuantity": 0.25,
+    "expectedUnit": "cup",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1/4 cup white wine",
+    "expectedName": "white wine",
+    "expectedQuantity": 0.25,
+    "expectedUnit": "cup",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1 cup arborio rice",
+    "expectedName": "arborio rice",
+    "expectedQuantity": 1,
+    "expectedUnit": "cup",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "2 cups mushrooms",
+    "expectedName": "mushrooms",
+    "expectedQuantity": 2,
+    "expectedUnit": "cup",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "4 cups vegetable broth",
+    "expectedName": "vegetable broth",
+    "expectedQuantity": 4,
+    "expectedUnit": "cup",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1/2 cup parmesan",
+    "expectedName": "parmesan",
+    "expectedQuantity": 0.5,
+    "expectedUnit": "cup",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1/2 onion, diced",
+    "expectedName": "onion",
+    "expectedQuantity": 0.5,
+    "expectedUnit": null,
+    "expectedPreparation": "diced"
+  },
+  {
+    "rawText": "4 chicken breasts",
+    "expectedName": "chicken breasts",
+    "expectedQuantity": 4,
+    "expectedUnit": null,
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "2 lemons",
+    "expectedName": "lemons",
+    "expectedQuantity": 2,
+    "expectedUnit": null,
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1 tbsp thyme",
+    "expectedName": "thyme",
+    "expectedQuantity": 1,
+    "expectedUnit": "tbsp",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "2 tbsp olive oil",
+    "expectedName": "olive oil",
+    "expectedQuantity": 2,
+    "expectedUnit": "tbsp",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "Salt and pepper",
+    "expectedName": "salt and pepper",
+    "expectedQuantity": null,
+    "expectedUnit": null,
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1 cucumber, chopped",
+    "expectedName": "cucumber",
+    "expectedQuantity": 1,
+    "expectedUnit": null,
+    "expectedPreparation": "chopped"
+  },
+  {
+    "rawText": "2 tomatoes, chopped",
+    "expectedName": "tomatoes",
+    "expectedQuantity": 2,
+    "expectedUnit": null,
+    "expectedPreparation": "chopped"
+  },
+  {
+    "rawText": "1/2 cup feta cheese",
+    "expectedName": "feta cheese",
+    "expectedQuantity": 0.5,
+    "expectedUnit": "cup",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1/4 cup black olives",
+    "expectedName": "black olives",
+    "expectedQuantity": 0.25,
+    "expectedUnit": "cup",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "2 tbsp olive oil",
+    "expectedName": "olive oil",
+    "expectedQuantity": 2,
+    "expectedUnit": "tbsp",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "4 lb pork shoulder",
+    "expectedName": "pork shoulder",
+    "expectedQuantity": 4,
+    "expectedUnit": "lb",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "2 cups BBQ sauce",
+    "expectedName": "bbq sauce",
+    "expectedQuantity": 2,
+    "expectedUnit": "cup",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1 onion, sliced",
+    "expectedName": "onion",
+    "expectedQuantity": 1,
+    "expectedUnit": null,
+    "expectedPreparation": "sliced"
+  },
+  {
+    "rawText": "1 can coconut milk",
+    "expectedName": "coconut milk",
+    "expectedQuantity": 1,
+    "expectedUnit": "can",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "2 tbsp curry powder",
+    "expectedName": "curry powder",
+    "expectedQuantity": 2,
+    "expectedUnit": "tbsp",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1 cup cauliflower",
+    "expectedName": "cauliflower",
+    "expectedQuantity": 1,
+    "expectedUnit": "cup",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1 cup chickpeas",
+    "expectedName": "chickpeas",
+    "expectedQuantity": 1,
+    "expectedUnit": "cup",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1 cup diced sweet potato",
+    "expectedName": "sweet potato",
+    "expectedQuantity": 1,
+    "expectedUnit": "cup",
+    "expectedPreparation": "diced"
+  },
+  {
+    "rawText": "1 lb macaroni",
+    "expectedName": "macaroni",
+    "expectedQuantity": 1,
+    "expectedUnit": "lb",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1/4 cup butter",
+    "expectedName": "butter",
+    "expectedQuantity": 0.25,
+    "expectedUnit": "cup",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1/4 cup flour",
+    "expectedName": "flour",
+    "expectedQuantity": 0.25,
+    "expectedUnit": "cup",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "2 cups milk",
+    "expectedName": "milk",
+    "expectedQuantity": 2,
+    "expectedUnit": "cup",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "2 cups shredded cheddar",
+    "expectedName": "cheddar",
+    "expectedQuantity": 2,
+    "expectedUnit": "cup",
+    "expectedPreparation": "shredded"
+  },
+  {
+    "rawText": "4 hard-boiled eggs",
+    "expectedName": "eggs",
+    "expectedQuantity": 4,
+    "expectedUnit": null,
+    "expectedPreparation": "hard-boiled"
+  },
+  {
+    "rawText": "1/4 cup mayo",
+    "expectedName": "mayo",
+    "expectedQuantity": 0.25,
+    "expectedUnit": "cup",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1 tsp mustard",
+    "expectedName": "mustard",
+    "expectedQuantity": 1,
+    "expectedUnit": "tsp",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "Salt and pepper",
+    "expectedName": "salt and pepper",
+    "expectedQuantity": null,
+    "expectedUnit": null,
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1 lb stew beef",
+    "expectedName": "stew beef",
+    "expectedQuantity": 1,
+    "expectedUnit": "lb",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "4 potatoes, cubed",
+    "expectedName": "potatoes",
+    "expectedQuantity": 4,
+    "expectedUnit": null,
+    "expectedPreparation": "cubed"
+  },
+  {
+    "rawText": "3 carrots, chopped",
+    "expectedName": "carrots",
+    "expectedQuantity": 3,
+    "expectedUnit": null,
+    "expectedPreparation": "chopped"
+  },
+  {
+    "rawText": "4 cups beef broth",
+    "expectedName": "beef broth",
+    "expectedQuantity": 4,
+    "expectedUnit": "cup",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1 onion, diced",
+    "expectedName": "onion",
+    "expectedQuantity": 1,
+    "expectedUnit": null,
+    "expectedPreparation": "diced"
+  },
+  {
+    "rawText": "1 lb white fish",
+    "expectedName": "white fish",
+    "expectedQuantity": 1,
+    "expectedUnit": "lb",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "8 corn tortillas",
+    "expectedName": "corn tortillas",
+    "expectedQuantity": 8,
+    "expectedUnit": null,
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1 cup shredded cabbage",
+    "expectedName": "cabbage",
+    "expectedQuantity": 1,
+    "expectedUnit": "cup",
+    "expectedPreparation": "shredded"
+  },
+  {
+    "rawText": "1/4 cup sour cream",
+    "expectedName": "sour cream",
+    "expectedQuantity": 0.25,
+    "expectedUnit": "cup",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1 lime",
+    "expectedName": "lime",
+    "expectedQuantity": 1,
+    "expectedUnit": null,
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "4 cups vegetable broth",
+    "expectedName": "vegetable broth",
+    "expectedQuantity": 4,
+    "expectedUnit": "cup",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1 can kidney beans",
+    "expectedName": "kidney beans",
+    "expectedQuantity": 1,
+    "expectedUnit": "can",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1 cup diced tomatoes",
+    "expectedName": "tomatoes",
+    "expectedQuantity": 1,
+    "expectedUnit": "cup",
+    "expectedPreparation": "diced"
+  },
+  {
+    "rawText": "1 cup zucchini",
+    "expectedName": "zucchini",
+    "expectedQuantity": 1,
+    "expectedUnit": "cup",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1/2 cup pasta",
+    "expectedName": "pasta",
+    "expectedQuantity": 0.5,
+    "expectedUnit": "cup",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "4 slices bread",
+    "expectedName": "bread",
+    "expectedQuantity": 4,
+    "expectedUnit": "slice",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "2 eggs",
+    "expectedName": "eggs",
+    "expectedQuantity": 2,
+    "expectedUnit": null,
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1/2 cup milk",
+    "expectedName": "milk",
+    "expectedQuantity": 0.5,
+    "expectedUnit": "cup",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1/2 tsp cinnamon",
+    "expectedName": "cinnamon",
+    "expectedQuantity": 0.5,
+    "expectedUnit": "tsp",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1 tbsp butter",
+    "expectedName": "butter",
+    "expectedQuantity": 1,
+    "expectedUnit": "tbsp",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1 head romaine",
+    "expectedName": "romaine",
+    "expectedQuantity": 1,
+    "expectedUnit": "head",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1/2 cup parmesan",
+    "expectedName": "parmesan",
+    "expectedQuantity": 0.5,
+    "expectedUnit": "cup",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1 cup croutons",
+    "expectedName": "croutons",
+    "expectedQuantity": 1,
+    "expectedUnit": "cup",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1/3 cup Caesar dressing",
+    "expectedName": "caesar dressing",
+    "expectedQuantity": 0.333,
+    "expectedUnit": "cup",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "2 salmon fillets",
+    "expectedName": "salmon fillets",
+    "expectedQuantity": 2,
+    "expectedUnit": null,
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1 tbsp olive oil",
+    "expectedName": "olive oil",
+    "expectedQuantity": 1,
+    "expectedUnit": "tbsp",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1/2 lemon",
+    "expectedName": "lemon",
+    "expectedQuantity": 0.5,
+    "expectedUnit": null,
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "Salt and pepper",
+    "expectedName": "salt and pepper",
+    "expectedQuantity": null,
+    "expectedUnit": null,
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "2 chicken breasts",
+    "expectedName": "chicken breasts",
+    "expectedQuantity": 2,
+    "expectedUnit": null,
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "4 cups chicken broth",
+    "expectedName": "chicken broth",
+    "expectedQuantity": 4,
+    "expectedUnit": "cup",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "2 carrots, diced",
+    "expectedName": "carrots",
+    "expectedQuantity": 2,
+    "expectedUnit": null,
+    "expectedPreparation": "diced"
+  },
+  {
+    "rawText": "2 celery stalks, diced",
+    "expectedName": "celery",
+    "expectedQuantity": 2,
+    "expectedUnit": "stalk",
+    "expectedPreparation": "diced"
+  },
+  {
+    "rawText": "1 cup egg noodles",
+    "expectedName": "egg noodles",
+    "expectedQuantity": 1,
+    "expectedUnit": "cup",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1 lb pasta",
+    "expectedName": "pasta",
+    "expectedQuantity": 1,
+    "expectedUnit": "lb",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1/2 cup pesto",
+    "expectedName": "pesto",
+    "expectedQuantity": 0.5,
+    "expectedUnit": "cup",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1/4 cup parmesan cheese",
+    "expectedName": "parmesan cheese",
+    "expectedQuantity": 0.25,
+    "expectedUnit": "cup",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1 cup cherry tomatoes",
+    "expectedName": "cherry tomatoes",
+    "expectedQuantity": 1,
+    "expectedUnit": "cup",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "2 bell peppers, sliced",
+    "expectedName": "bell peppers",
+    "expectedQuantity": 2,
+    "expectedUnit": null,
+    "expectedPreparation": "sliced"
+  },
+  {
+    "rawText": "1 onion, sliced",
+    "expectedName": "onion",
+    "expectedQuantity": 1,
+    "expectedUnit": null,
+    "expectedPreparation": "sliced"
+  },
+  {
+    "rawText": "1 tbsp fajita seasoning",
+    "expectedName": "fajita seasoning",
+    "expectedQuantity": 1,
+    "expectedUnit": "tbsp",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "8 tortillas",
+    "expectedName": "tortillas",
+    "expectedQuantity": 8,
+    "expectedUnit": null,
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1 tbsp olive oil",
+    "expectedName": "olive oil",
+    "expectedQuantity": 1,
+    "expectedUnit": "tbsp",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "3 mashed bananas",
+    "expectedName": "bananas",
+    "expectedQuantity": 3,
+    "expectedUnit": null,
+    "expectedPreparation": "mashed"
+  },
+  {
+    "rawText": "1/3 cup melted butter",
+    "expectedName": "butter",
+    "expectedQuantity": 0.333,
+    "expectedUnit": "cup",
+    "expectedPreparation": "melted"
+  },
+  {
+    "rawText": "1 tsp baking soda",
+    "expectedName": "baking soda",
+    "expectedQuantity": 1,
+    "expectedUnit": "tsp",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1 cup sugar",
+    "expectedName": "sugar",
+    "expectedQuantity": 1,
+    "expectedUnit": "cup",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1.5 cups flour",
+    "expectedName": "flour",
+    "expectedQuantity": 1.5,
+    "expectedUnit": "cup",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1 egg",
+    "expectedName": "egg",
+    "expectedQuantity": 1,
+    "expectedUnit": null,
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1 lb ground turkey",
+    "expectedName": "ground turkey",
+    "expectedQuantity": 1,
+    "expectedUnit": "lb",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1/4 cup breadcrumbs",
+    "expectedName": "breadcrumbs",
+    "expectedQuantity": 0.25,
+    "expectedUnit": "cup",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1 egg",
+    "expectedName": "egg",
+    "expectedQuantity": 1,
+    "expectedUnit": null,
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1 tsp Italian seasoning",
+    "expectedName": "Italian seasoning",
+    "expectedQuantity": 1,
+    "expectedUnit": "tsp",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "2 cups marinara sauce",
+    "expectedName": "marinara sauce",
+    "expectedQuantity": 2,
+    "expectedUnit": "cup",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1 cup quinoa",
+    "expectedName": "quinoa",
+    "expectedQuantity": 1,
+    "expectedUnit": "cup",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "2 cups water",
+    "expectedName": "water",
+    "expectedQuantity": 2,
+    "expectedUnit": "cup",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1 cucumber, diced",
+    "expectedName": "cucumber",
+    "expectedQuantity": 1,
+    "expectedUnit": null,
+    "expectedPreparation": "diced"
+  },
+  {
+    "rawText": "1 bell pepper, diced",
+    "expectedName": "bell pepper",
+    "expectedQuantity": 1,
+    "expectedUnit": null,
+    "expectedPreparation": "diced"
+  },
+  {
+    "rawText": "Lemon vinaigrette",
+    "expectedName": "lemon vinaigrette",
+    "expectedQuantity": null,
+    "expectedUnit": null,
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1 cup peanut butter",
+    "expectedName": "peanut butter",
+    "expectedQuantity": 1,
+    "expectedUnit": "cup",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1 cup sugar",
+    "expectedName": "sugar",
+    "expectedQuantity": 1,
+    "expectedUnit": "cup",
+    "expectedPreparation": null
+  },
+  {
+    "rawText": "1 egg",
+    "expectedName": "egg",
+    "expectedQuantity": 1,
+    "expectedUnit": null,
+    "expectedPreparation": null
+  }
+]

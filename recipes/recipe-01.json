@@ -1,0 +1,30 @@
+{
+  "sourceExternalId": "recipe-001",
+  "title": "Vegetable Fried Rice",
+  "description": "A quick rice dish using vegetables and eggs.",
+  "prepMinutes": 10,
+  "cookMinutes": 15,
+  "servings": 4,
+  "cuisine": "Asian-inspired",
+  "mealTypes": ["dinner"],
+  "dietaryTags": ["vegetarian"],
+  "ingredients": [
+    "3 cups cooked rice",
+    "2 large eggs",
+    "1 cup diced carrots",
+    "1/2 cup frozen peas",
+    "2 tablespoons soy sauce",
+    "2 green onions, sliced"
+  ],
+  "instructions": [
+    "Heat a large pan over medium heat.",
+    "Cook the eggs and set them aside.",
+    "Cook the carrots and peas.",
+    "Add rice, soy sauce, eggs, and green onions."
+  ],
+  "source": {
+    "name": "PantryPilot Sample Recipes",
+    "url": null,
+    "license": "Created for this project"
+  }
+}

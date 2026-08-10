@@ -1,0 +1,956 @@
+[
+  {
+    "sourceExternalId": "recipe-001",
+    "title": "Vegetable Fried Rice",
+    "description": "A quick rice dish using vegetables and eggs.",
+    "prepMinutes": 10,
+    "cookMinutes": 15,
+    "servings": 4,
+    "cuisine": "Asian-inspired",
+    "mealTypes": [
+      "dinner",
+      "lunch"
+    ],
+    "dietaryTags": [
+      "vegetarian"
+    ],
+    "ingredients": [
+      "3 cups cooked rice",
+      "2 large eggs",
+      "1 cup diced carrots",
+      "1/2 cup frozen peas",
+      "2 tbsp soy sauce"
+    ],
+    "instructions": [
+      "Heat a large pan.",
+      "Cook eggs.",
+      "Cook vegetables.",
+      "Mix all together."
+    ],
+    "source": {
+      "name": "PantryPilot Sample Recipes",
+      "url": null,
+      "license": "Created for this project"
+    }
+  },
+  {
+    "sourceExternalId": "recipe-002",
+    "title": "Avocado Toast",
+    "description": "Simple and healthy breakfast.",
+    "prepMinutes": 5,
+    "cookMinutes": 0,
+    "servings": 1,
+    "cuisine": "American",
+    "mealTypes": [
+      "breakfast"
+    ],
+    "dietaryTags": [
+      "vegan",
+      "vegetarian"
+    ],
+    "ingredients": [
+      "1 slice bread",
+      "1/2 avocado",
+      "Pinch of salt",
+      "Pinch of red pepper flakes"
+    ],
+    "instructions": [
+      "Toast the bread.",
+      "Mash avocado on top.",
+      "Sprinkle with salt and pepper flakes."
+    ],
+    "source": {
+      "name": "PantryPilot Sample Recipes",
+      "url": null,
+      "license": "Created for this project"
+    }
+  },
+  {
+    "sourceExternalId": "recipe-003",
+    "title": "Tomato Basil Soup",
+    "description": "Warm, comforting soup.",
+    "prepMinutes": 10,
+    "cookMinutes": 30,
+    "servings": 4,
+    "cuisine": "Italian-inspired",
+    "mealTypes": [
+      "lunch",
+      "dinner"
+    ],
+    "dietaryTags": [
+      "vegetarian"
+    ],
+    "ingredients": [
+      "2 cans crushed tomatoes",
+      "1 onion, chopped",
+      "2 cloves garlic",
+      "1/2 cup fresh basil",
+      "1/2 cup heavy cream"
+    ],
+    "instructions": [
+      "Saut\u00e9 onion and garlic.",
+      "Add tomatoes and simmer.",
+      "Stir in cream and basil.",
+      "Blend until smooth."
+    ],
+    "source": {
+      "name": "PantryPilot Sample Recipes",
+      "url": null,
+      "license": "Created for this project"
+    }
+  },
+  {
+    "sourceExternalId": "recipe-004",
+    "title": "Grilled Cheese Sandwich",
+    "description": "Classic crispy, melty sandwich.",
+    "prepMinutes": 5,
+    "cookMinutes": 10,
+    "servings": 1,
+    "cuisine": "American",
+    "mealTypes": [
+      "lunch"
+    ],
+    "dietaryTags": [
+      "vegetarian"
+    ],
+    "ingredients": [
+      "2 slices bread",
+      "2 slices cheddar cheese",
+      "1 tbsp butter"
+    ],
+    "instructions": [
+      "Butter the bread.",
+      "Place cheese between slices.",
+      "Grill in a pan until golden on both sides."
+    ],
+    "source": {
+      "name": "PantryPilot Sample Recipes",
+      "url": null,
+      "license": "Created for this project"
+    }
+  },
+  {
+    "sourceExternalId": "recipe-005",
+    "title": "Beef Tacos",
+    "description": "Easy weeknight tacos.",
+    "prepMinutes": 10,
+    "cookMinutes": 15,
+    "servings": 4,
+    "cuisine": "Mexican-inspired",
+    "mealTypes": [
+      "dinner"
+    ],
+    "dietaryTags": [],
+    "ingredients": [
+      "1 lb ground beef",
+      "1 pkt taco seasoning",
+      "8 taco shells",
+      "1/2 cup shredded cheese",
+      "1/4 cup diced tomatoes"
+    ],
+    "instructions": [
+      "Brown the beef.",
+      "Add seasoning and water.",
+      "Serve in shells with toppings."
+    ],
+    "source": {
+      "name": "PantryPilot Sample Recipes",
+      "url": null,
+      "license": "Created for this project"
+    }
+  },
+  {
+    "sourceExternalId": "recipe-006",
+    "title": "Chicken Stir-Fry",
+    "description": "Quick vegetable and chicken stir-fry.",
+    "prepMinutes": 15,
+    "cookMinutes": 10,
+    "servings": 4,
+    "cuisine": "Asian-inspired",
+    "mealTypes": [
+      "dinner"
+    ],
+    "dietaryTags": [],
+    "ingredients": [
+      "1 lb chicken breast, sliced",
+      "2 cups broccoli florets",
+      "1 bell pepper, sliced",
+      "3 tbsp soy sauce",
+      "1 tbsp sesame oil"
+    ],
+    "instructions": [
+      "Cook chicken in oil.",
+      "Add vegetables and stir-fry.",
+      "Stir in soy sauce and serve."
+    ],
+    "source": {
+      "name": "PantryPilot Sample Recipes",
+      "url": null,
+      "license": "Created for this project"
+    }
+  },
+  {
+    "sourceExternalId": "recipe-007",
+    "title": "Oatmeal",
+    "description": "Warm morning porridge.",
+    "prepMinutes": 5,
+    "cookMinutes": 5,
+    "servings": 2,
+    "cuisine": "American",
+    "mealTypes": [
+      "breakfast"
+    ],
+    "dietaryTags": [
+      "vegan",
+      "vegetarian"
+    ],
+    "ingredients": [
+      "1 cup rolled oats",
+      "2 cups water or milk",
+      "1 tbsp honey",
+      "1/4 cup berries"
+    ],
+    "instructions": [
+      "Boil liquid.",
+      "Stir in oats and cook for 5 minutes.",
+      "Top with honey and berries."
+    ],
+    "source": {
+      "name": "PantryPilot Sample Recipes",
+      "url": null,
+      "license": "Created for this project"
+    }
+  },
+  {
+    "sourceExternalId": "recipe-008",
+    "title": "Caprese Salad",
+    "description": "Fresh mozzarella, tomatoes, and basil.",
+    "prepMinutes": 10,
+    "cookMinutes": 0,
+    "servings": 2,
+    "cuisine": "Italian",
+    "mealTypes": [
+      "lunch",
+      "appetizer"
+    ],
+    "dietaryTags": [
+      "vegetarian",
+      "gluten-free"
+    ],
+    "ingredients": [
+      "2 tomatoes, sliced",
+      "8 oz fresh mozzarella, sliced",
+      "Fresh basil leaves",
+      "Balsamic glaze"
+    ],
+    "instructions": [
+      "Layer tomatoes and mozzarella.",
+      "Tuck basil leaves between layers.",
+      "Drizzle with balsamic glaze."
+    ],
+    "source": {
+      "name": "PantryPilot Sample Recipes",
+      "url": null,
+      "license": "Created for this project"
+    }
+  },
+  {
+    "sourceExternalId": "recipe-009",
+    "title": "Pancakes",
+    "description": "Fluffy breakfast staple.",
+    "prepMinutes": 10,
+    "cookMinutes": 15,
+    "servings": 4,
+    "cuisine": "American",
+    "mealTypes": [
+      "breakfast"
+    ],
+    "dietaryTags": [
+      "vegetarian"
+    ],
+    "ingredients": [
+      "1 cup flour",
+      "1 cup milk",
+      "1 egg",
+      "1 tbsp baking powder",
+      "2 tbsp sugar"
+    ],
+    "instructions": [
+      "Mix ingredients.",
+      "Pour batter onto hot griddle.",
+      "Flip when bubbles form."
+    ],
+    "source": {
+      "name": "PantryPilot Sample Recipes",
+      "url": null,
+      "license": "Created for this project"
+    }
+  },
+  {
+    "sourceExternalId": "recipe-010",
+    "title": "Shrimp Scampi",
+    "description": "Garlicky, buttery shrimp pasta.",
+    "prepMinutes": 10,
+    "cookMinutes": 15,
+    "servings": 4,
+    "cuisine": "Italian-inspired",
+    "mealTypes": [
+      "dinner"
+    ],
+    "dietaryTags": [
+      "pescatarian"
+    ],
+    "ingredients": [
+      "1 lb shrimp",
+      "8 oz linguine",
+      "4 cloves garlic",
+      "1/4 cup butter",
+      "1/4 cup white wine"
+    ],
+    "instructions": [
+      "Cook pasta.",
+      "Saut\u00e9 garlic in butter.",
+      "Add shrimp and wine, cook until pink.",
+      "Toss with pasta."
+    ],
+    "source": {
+      "name": "PantryPilot Sample Recipes",
+      "url": null,
+      "license": "Created for this project"
+    }
+  },
+  {
+    "sourceExternalId": "recipe-011",
+    "title": "Mushroom Risotto",
+    "description": "Creamy rice dish with mushrooms.",
+    "prepMinutes": 15,
+    "cookMinutes": 30,
+    "servings": 4,
+    "cuisine": "Italian",
+    "mealTypes": [
+      "dinner"
+    ],
+    "dietaryTags": [
+      "vegetarian"
+    ],
+    "ingredients": [
+      "1 cup arborio rice",
+      "2 cups mushrooms",
+      "4 cups vegetable broth",
+      "1/2 cup parmesan",
+      "1/2 onion, diced"
+    ],
+    "instructions": [
+      "Saut\u00e9 onion and mushrooms.",
+      "Add rice.",
+      "Gradually add broth while stirring.",
+      "Stir in cheese."
+    ],
+    "source": {
+      "name": "PantryPilot Sample Recipes",
+      "url": null,
+      "license": "Created for this project"
+    }
+  },
+  {
+    "sourceExternalId": "recipe-012",
+    "title": "Lemon Herb Chicken",
+    "description": "Oven-baked chicken breast.",
+    "prepMinutes": 10,
+    "cookMinutes": 25,
+    "servings": 4,
+    "cuisine": "American",
+    "mealTypes": [
+      "dinner"
+    ],
+    "dietaryTags": [
+      "gluten-free"
+    ],
+    "ingredients": [
+      "4 chicken breasts",
+      "2 lemons",
+      "1 tbsp thyme",
+      "2 tbsp olive oil",
+      "Salt and pepper"
+    ],
+    "instructions": [
+      "Marinate chicken in oil, lemon juice, and herbs.",
+      "Bake at 400F for 25 minutes."
+    ],
+    "source": {
+      "name": "PantryPilot Sample Recipes",
+      "url": null,
+      "license": "Created for this project"
+    }
+  },
+  {
+    "sourceExternalId": "recipe-013",
+    "title": "Greek Salad",
+    "description": "Cucumber, tomato, and feta salad.",
+    "prepMinutes": 15,
+    "cookMinutes": 0,
+    "servings": 4,
+    "cuisine": "Greek",
+    "mealTypes": [
+      "lunch"
+    ],
+    "dietaryTags": [
+      "vegetarian",
+      "gluten-free"
+    ],
+    "ingredients": [
+      "1 cucumber, chopped",
+      "2 tomatoes, chopped",
+      "1/2 cup feta cheese",
+      "1/4 cup black olives",
+      "2 tbsp olive oil"
+    ],
+    "instructions": [
+      "Combine all vegetables.",
+      "Top with feta and olives.",
+      "Dress with olive oil."
+    ],
+    "source": {
+      "name": "PantryPilot Sample Recipes",
+      "url": null,
+      "license": "Created for this project"
+    }
+  },
+  {
+    "sourceExternalId": "recipe-014",
+    "title": "BBQ Pulled Pork",
+    "description": "Slow-cooked pork shoulder.",
+    "prepMinutes": 15,
+    "cookMinutes": 480,
+    "servings": 8,
+    "cuisine": "American",
+    "mealTypes": [
+      "dinner"
+    ],
+    "dietaryTags": [],
+    "ingredients": [
+      "4 lb pork shoulder",
+      "2 cups BBQ sauce",
+      "1 onion, sliced"
+    ],
+    "instructions": [
+      "Place pork and onion in slow cooker.",
+      "Cook on low for 8 hours.",
+      "Shred pork and mix with BBQ sauce."
+    ],
+    "source": {
+      "name": "PantryPilot Sample Recipes",
+      "url": null,
+      "license": "Created for this project"
+    }
+  },
+  {
+    "sourceExternalId": "recipe-015",
+    "title": "Vegetable Curry",
+    "description": "Spicy and creamy coconut curry.",
+    "prepMinutes": 15,
+    "cookMinutes": 20,
+    "servings": 4,
+    "cuisine": "Indian-inspired",
+    "mealTypes": [
+      "dinner"
+    ],
+    "dietaryTags": [
+      "vegan",
+      "vegetarian"
+    ],
+    "ingredients": [
+      "1 can coconut milk",
+      "2 tbsp curry powder",
+      "1 cup cauliflower",
+      "1 cup chickpeas",
+      "1 cup diced sweet potato"
+    ],
+    "instructions": [
+      "Simmer vegetables in coconut milk and curry powder until tender.",
+      "Serve with rice."
+    ],
+    "source": {
+      "name": "PantryPilot Sample Recipes",
+      "url": null,
+      "license": "Created for this project"
+    }
+  },
+  {
+    "sourceExternalId": "recipe-016",
+    "title": "Macaroni and Cheese",
+    "description": "Cheesy comfort food.",
+    "prepMinutes": 10,
+    "cookMinutes": 20,
+    "servings": 6,
+    "cuisine": "American",
+    "mealTypes": [
+      "dinner",
+      "lunch"
+    ],
+    "dietaryTags": [
+      "vegetarian"
+    ],
+    "ingredients": [
+      "1 lb macaroni",
+      "1/4 cup butter",
+      "1/4 cup flour",
+      "2 cups milk",
+      "2 cups shredded cheddar"
+    ],
+    "instructions": [
+      "Cook macaroni.",
+      "Make a roux with butter and flour.",
+      "Whisk in milk and melt cheese.",
+      "Combine with pasta."
+    ],
+    "source": {
+      "name": "PantryPilot Sample Recipes",
+      "url": null,
+      "license": "Created for this project"
+    }
+  },
+  {
+    "sourceExternalId": "recipe-017",
+    "title": "Egg Salad",
+    "description": "Classic sandwich filling.",
+    "prepMinutes": 10,
+    "cookMinutes": 10,
+    "servings": 2,
+    "cuisine": "American",
+    "mealTypes": [
+      "lunch"
+    ],
+    "dietaryTags": [
+      "vegetarian"
+    ],
+    "ingredients": [
+      "4 hard-boiled eggs",
+      "1/4 cup mayo",
+      "1 tsp mustard",
+      "Salt and pepper"
+    ],
+    "instructions": [
+      "Chop the eggs.",
+      "Mix with mayo, mustard, and seasonings.",
+      "Serve on bread or lettuce."
+    ],
+    "source": {
+      "name": "PantryPilot Sample Recipes",
+      "url": null,
+      "license": "Created for this project"
+    }
+  },
+  {
+    "sourceExternalId": "recipe-018",
+    "title": "Beef Stew",
+    "description": "Hearty stew with beef and potatoes.",
+    "prepMinutes": 20,
+    "cookMinutes": 120,
+    "servings": 6,
+    "cuisine": "European",
+    "mealTypes": [
+      "dinner"
+    ],
+    "dietaryTags": [],
+    "ingredients": [
+      "1 lb stew beef",
+      "4 potatoes, cubed",
+      "3 carrots, chopped",
+      "4 cups beef broth",
+      "1 onion, diced"
+    ],
+    "instructions": [
+      "Brown the beef.",
+      "Add vegetables and broth.",
+      "Simmer for 2 hours."
+    ],
+    "source": {
+      "name": "PantryPilot Sample Recipes",
+      "url": null,
+      "license": "Created for this project"
+    }
+  },
+  {
+    "sourceExternalId": "recipe-019",
+    "title": "Fish Tacos",
+    "description": "Crispy fish with slaw.",
+    "prepMinutes": 15,
+    "cookMinutes": 15,
+    "servings": 4,
+    "cuisine": "Mexican-inspired",
+    "mealTypes": [
+      "dinner"
+    ],
+    "dietaryTags": [
+      "pescatarian"
+    ],
+    "ingredients": [
+      "1 lb white fish",
+      "8 corn tortillas",
+      "1 cup shredded cabbage",
+      "1/4 cup sour cream",
+      "1 lime"
+    ],
+    "instructions": [
+      "Pan-fry the fish.",
+      "Warm the tortillas.",
+      "Assemble tacos with fish, cabbage, and sour cream."
+    ],
+    "source": {
+      "name": "PantryPilot Sample Recipes",
+      "url": null,
+      "license": "Created for this project"
+    }
+  },
+  {
+    "sourceExternalId": "recipe-020",
+    "title": "Minestrone Soup",
+    "description": "Italian vegetable and bean soup.",
+    "prepMinutes": 15,
+    "cookMinutes": 40,
+    "servings": 6,
+    "cuisine": "Italian",
+    "mealTypes": [
+      "lunch",
+      "dinner"
+    ],
+    "dietaryTags": [
+      "vegetarian"
+    ],
+    "ingredients": [
+      "4 cups vegetable broth",
+      "1 can kidney beans",
+      "1 cup diced tomatoes",
+      "1 cup zucchini",
+      "1/2 cup pasta"
+    ],
+    "instructions": [
+      "Simmer vegetables in broth.",
+      "Add beans and pasta.",
+      "Cook until pasta is tender."
+    ],
+    "source": {
+      "name": "PantryPilot Sample Recipes",
+      "url": null,
+      "license": "Created for this project"
+    }
+  },
+  {
+    "sourceExternalId": "recipe-021",
+    "title": "French Toast",
+    "description": "Sweet, cinnamon-spiced breakfast bread.",
+    "prepMinutes": 5,
+    "cookMinutes": 10,
+    "servings": 2,
+    "cuisine": "American",
+    "mealTypes": [
+      "breakfast"
+    ],
+    "dietaryTags": [
+      "vegetarian"
+    ],
+    "ingredients": [
+      "4 slices bread",
+      "2 eggs",
+      "1/2 cup milk",
+      "1/2 tsp cinnamon",
+      "1 tbsp butter"
+    ],
+    "instructions": [
+      "Whisk eggs, milk, and cinnamon.",
+      "Dip bread in mixture.",
+      "Cook in buttered skillet until golden."
+    ],
+    "source": {
+      "name": "PantryPilot Sample Recipes",
+      "url": null,
+      "license": "Created for this project"
+    }
+  },
+  {
+    "sourceExternalId": "recipe-022",
+    "title": "Caesar Salad",
+    "description": "Classic romaine salad.",
+    "prepMinutes": 10,
+    "cookMinutes": 0,
+    "servings": 4,
+    "cuisine": "American",
+    "mealTypes": [
+      "lunch"
+    ],
+    "dietaryTags": [
+      "vegetarian"
+    ],
+    "ingredients": [
+      "1 head romaine",
+      "1/2 cup parmesan",
+      "1 cup croutons",
+      "1/3 cup Caesar dressing"
+    ],
+    "instructions": [
+      "Chop romaine.",
+      "Toss with dressing.",
+      "Top with parmesan and croutons."
+    ],
+    "source": {
+      "name": "PantryPilot Sample Recipes",
+      "url": null,
+      "license": "Created for this project"
+    }
+  },
+  {
+    "sourceExternalId": "recipe-023",
+    "title": "Baked Salmon",
+    "description": "Simple oven-baked salmon.",
+    "prepMinutes": 5,
+    "cookMinutes": 15,
+    "servings": 2,
+    "cuisine": "American",
+    "mealTypes": [
+      "dinner"
+    ],
+    "dietaryTags": [
+      "pescatarian",
+      "gluten-free"
+    ],
+    "ingredients": [
+      "2 salmon fillets",
+      "1 tbsp olive oil",
+      "1/2 lemon",
+      "Salt and pepper"
+    ],
+    "instructions": [
+      "Rub salmon with oil.",
+      "Season with salt, pepper, and lemon juice.",
+      "Bake at 375F for 15 minutes."
+    ],
+    "source": {
+      "name": "PantryPilot Sample Recipes",
+      "url": null,
+      "license": "Created for this project"
+    }
+  },
+  {
+    "sourceExternalId": "recipe-024",
+    "title": "Chicken Noodle Soup",
+    "description": "Comforting soup.",
+    "prepMinutes": 15,
+    "cookMinutes": 45,
+    "servings": 6,
+    "cuisine": "American",
+    "mealTypes": [
+      "lunch",
+      "dinner"
+    ],
+    "dietaryTags": [],
+    "ingredients": [
+      "2 chicken breasts",
+      "4 cups chicken broth",
+      "2 carrots, diced",
+      "2 celery stalks, diced",
+      "1 cup egg noodles"
+    ],
+    "instructions": [
+      "Boil chicken in broth until cooked, then shred.",
+      "Add vegetables and simmer.",
+      "Add noodles and cook until tender."
+    ],
+    "source": {
+      "name": "PantryPilot Sample Recipes",
+      "url": null,
+      "license": "Created for this project"
+    }
+  },
+  {
+    "sourceExternalId": "recipe-025",
+    "title": "Pesto Pasta",
+    "description": "Pasta with fresh basil pesto.",
+    "prepMinutes": 5,
+    "cookMinutes": 15,
+    "servings": 4,
+    "cuisine": "Italian",
+    "mealTypes": [
+      "dinner"
+    ],
+    "dietaryTags": [
+      "vegetarian"
+    ],
+    "ingredients": [
+      "1 lb pasta",
+      "1/2 cup pesto",
+      "1/4 cup parmesan cheese",
+      "1 cup cherry tomatoes"
+    ],
+    "instructions": [
+      "Cook pasta.",
+      "Toss with pesto.",
+      "Top with halved tomatoes and cheese."
+    ],
+    "source": {
+      "name": "PantryPilot Sample Recipes",
+      "url": null,
+      "license": "Created for this project"
+    }
+  },
+  {
+    "sourceExternalId": "recipe-026",
+    "title": "Vegetable Fajitas",
+    "description": "Sizzling vegetables in tortillas.",
+    "prepMinutes": 15,
+    "cookMinutes": 15,
+    "servings": 4,
+    "cuisine": "Mexican-inspired",
+    "mealTypes": [
+      "dinner"
+    ],
+    "dietaryTags": [
+      "vegan",
+      "vegetarian"
+    ],
+    "ingredients": [
+      "2 bell peppers, sliced",
+      "1 onion, sliced",
+      "1 tbsp fajita seasoning",
+      "8 tortillas",
+      "1 tbsp olive oil"
+    ],
+    "instructions": [
+      "Saut\u00e9 peppers and onions in oil with seasoning.",
+      "Serve in warm tortillas."
+    ],
+    "source": {
+      "name": "PantryPilot Sample Recipes",
+      "url": null,
+      "license": "Created for this project"
+    }
+  },
+  {
+    "sourceExternalId": "recipe-027",
+    "title": "Banana Bread",
+    "description": "Sweet loaf made with overripe bananas.",
+    "prepMinutes": 15,
+    "cookMinutes": 60,
+    "servings": 8,
+    "cuisine": "American",
+    "mealTypes": [
+      "snack",
+      "breakfast"
+    ],
+    "dietaryTags": [
+      "vegetarian"
+    ],
+    "ingredients": [
+      "3 mashed bananas",
+      "1/3 cup melted butter",
+      "1 tsp baking soda",
+      "1 cup sugar",
+      "1.5 cups flour",
+      "1 egg"
+    ],
+    "instructions": [
+      "Mix bananas and butter.",
+      "Add dry ingredients and egg, mix well.",
+      "Bake at 350F for 1 hour."
+    ],
+    "source": {
+      "name": "PantryPilot Sample Recipes",
+      "url": null,
+      "license": "Created for this project"
+    }
+  },
+  {
+    "sourceExternalId": "recipe-028",
+    "title": "Turkey Meatballs",
+    "description": "Healthy alternative to beef meatballs.",
+    "prepMinutes": 15,
+    "cookMinutes": 20,
+    "servings": 4,
+    "cuisine": "Italian-inspired",
+    "mealTypes": [
+      "dinner"
+    ],
+    "dietaryTags": [],
+    "ingredients": [
+      "1 lb ground turkey",
+      "1/4 cup breadcrumbs",
+      "1 egg",
+      "1 tsp Italian seasoning",
+      "2 cups marinara sauce"
+    ],
+    "instructions": [
+      "Mix turkey, breadcrumbs, egg, and seasoning.",
+      "Form into balls and bake at 400F for 15 mins.",
+      "Simmer in marinara sauce."
+    ],
+    "source": {
+      "name": "PantryPilot Sample Recipes",
+      "url": null,
+      "license": "Created for this project"
+    }
+  },
+  {
+    "sourceExternalId": "recipe-029",
+    "title": "Quinoa Salad",
+    "description": "Light and refreshing grain salad.",
+    "prepMinutes": 15,
+    "cookMinutes": 15,
+    "servings": 4,
+    "cuisine": "Mediterranean-inspired",
+    "mealTypes": [
+      "lunch"
+    ],
+    "dietaryTags": [
+      "vegan",
+      "gluten-free"
+    ],
+    "ingredients": [
+      "1 cup quinoa",
+      "2 cups water",
+      "1 cucumber, diced",
+      "1 bell pepper, diced",
+      "Lemon vinaigrette"
+    ],
+    "instructions": [
+      "Cook quinoa in water.",
+      "Let cool, then mix with vegetables.",
+      "Toss with vinaigrette."
+    ],
+    "source": {
+      "name": "PantryPilot Sample Recipes",
+      "url": null,
+      "license": "Created for this project"
+    }
+  },
+  {
+    "sourceExternalId": "recipe-030",
+    "title": "Peanut Butter Cookies",
+    "description": "Classic chewy cookies.",
+    "prepMinutes": 10,
+    "cookMinutes": 10,
+    "servings": 12,
+    "cuisine": "American",
+    "mealTypes": [
+      "dessert",
+      "snack"
+    ],
+    "dietaryTags": [
+      "vegetarian"
+    ],
+    "ingredients": [
+      "1 cup peanut butter",
+      "1 cup sugar",
+      "1 egg"
+    ],
+    "instructions": [
+      "Mix all ingredients.",
+      "Roll into balls and press with a fork.",
+      "Bake at 350F for 10 minutes."
+    ],
+    "source": {
+      "name": "PantryPilot Sample Recipes",
+      "url": null,
+      "license": "Created for this project"
+    }
+  }
+]
