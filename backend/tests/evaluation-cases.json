@@ -1,0 +1,16 @@
+[
+  {
+    "caseId": "quick-breakfast-01",
+    "pantry": ["egg", "bread", "milk", "butter"],
+    "request": {
+      "mealTypes": ["breakfast"],
+      "maxTotalMinutes": 15,
+      "maxMissingIngredients": 1
+    },
+    "acceptableRecipeIds": ["002539eb-2914-4e0d-acdf-01c3d2b21bfa", "00f5d635-1c76-4d13-9344-d3469cf53860", "03d0b161-3fba-4fd0-8dea-e609746dbba4"],
+    "mustNotIncludeRecipeIds": ["slow-cooker-oatmeal"],
+    "expectedMissingByRecipe": {
+      "french-toast": []
+    }
+  }
+]
