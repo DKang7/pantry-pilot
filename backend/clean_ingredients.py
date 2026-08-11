@@ -47,6 +47,13 @@ def fix_ingredient_units():
         elif name.startswith("cans "):
             new_unit = "can"
             new_name = name.replace("cans ", "", 1)
+
+        elif name.startswith("pkt "):
+                    new_unit = "pkt"
+                    new_name = name.replace("pkt ", "", 1)
+        elif name.startswith("pkts "):
+                new_unit = "pkts"
+                new_name = name.replace("pkts ", "", 1)
             
         # 3. Fix "pinch of" (and handle missing quantity)
         elif name.startswith("pinch of "):
