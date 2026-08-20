@@ -4,6 +4,11 @@ import uuid
 import json
 from datetime import datetime
 from dotenv import load_dotenv
+
+# 1. LOAD ENV VARS FIRST! 
+# This must happen before importing app.engine so Gemini can find the key.
+load_dotenv()
+
 from fastapi import FastAPI, HTTPException, UploadFile, File, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from supabase import create_client, Client, ClientOptions
@@ -14,11 +19,21 @@ from PIL import Image
 from app.core.config import settings
 from app.models import (
     InventoryActionRequest, NewItemRequest, ApprovalPayload,
-    RecommendationRequest, RecommendationResponse
+    RecommendationRequest, RecommendationResponse,
+    SaveRecipeRequest, DismissRecipeRequest, RecipeFeedbackRequest,
+    DeductionItem, CookingCompleteRequest
 )
-from app.engine import summarize_pantry, format_recipe_candidates, rank_recipes
 
-load_dotenv()
+from app.engine import (
+    search_recipes_semantically,
+    calculate_hybrid_score,
+    sort_hybrid_results,
+    summarize_pantry,              
+    rank_recipes,                  
+    format_recipe_candidates,
+    generate_llm_explanations,
+    build_consumption_proposal
+)
 
 app = FastAPI(title=settings.PROJECT_NAME)
 
@@ -37,7 +52,12 @@ if not url or not key:
     print("🚨 WARNING: SUPABASE_URL or SUPABASE_KEY is missing from environment variables!")
 supabase: Client = create_client(url, key)
 
-genai_client = genai.Client()
+# Initialize Gemini Client explicitly
+gemini_api_key = os.environ.get("GEMINI_API_KEY")
+if not gemini_api_key:
+    print("🚨 WARNING: GEMINI_API_KEY is missing from environment variables!")
+genai_client = genai.Client(api_key=gemini_api_key)
+
 UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
@@ -58,46 +78,96 @@ def health_check():
 
 @app.post("/api/recommendations", response_model=RecommendationResponse)
 async def get_recommendations(request: RecommendationRequest):
-    """Endpoint for returning deterministically ranked recipe recommendations."""
+    """Endpoint for returning deterministically ranked and semantically retrieved recipe recommendations."""
     try:
-        # Load user's active pantry inventory
+        # 1. Fetch user's active pantry inventory
         pantry_res = supabase.table("pantry_items").select("*").eq("status", "active").execute()
-
-        #print("RAW PANTRY DATA FROM DB:", pantry_res.data) #--
-
-        pantry_summary = summarize_pantry(pantry_res.data)
-
-        #print("SUMMARIZED PANTRY DATA:", pantry_summary) #--
-
-        # Load active recipes and ingredients
+        user_pantry = summarize_pantry(pantry_res.data)
+        
+        # 2. Fetch all active recipes and format candidates
         recipes_res = supabase.table("recipes").select("*").eq("status", "active").execute()
         ingredients_res = supabase.table("recipe_ingredients").select("*").execute()
-        
         recipe_candidates = format_recipe_candidates(recipes_res.data, ingredients_res.data)
 
-        # Run the matching algorithm[cite: 1]
-        ranked_results = rank_recipes(pantry_summary, recipe_candidates, request)
+        # 3. Execute Semantic Search (if natural language query provided)
+        semantic_scores = {}
+        retrieval_mode = "deterministic"
+        
+        if request.queryText and request.queryText.strip():
+            semantic_scores = search_recipes_semantically(supabase, request.queryText, limit=20)
+            if semantic_scores:
+                retrieval_mode = "hybrid"
 
-        # Handle Empty State[cite: 1]
-        if not ranked_results:
-            return {
-                "algorithmVersion": "deterministic-v1",
-                "generatedAt": datetime.utcnow().isoformat() + "Z",
-                "pantryItemCount": len(pantry_summary),
-                "filters": request.dict(),
-                "results": [],
-                "message": "No recipes matched the current pantry and filters."
-            }
+        # 4. Get Deterministic Results (This applies your Day 9 hard filters and calculates scores)
+        deterministic_results = rank_recipes(user_pantry, recipe_candidates, request)
 
+        valid_candidates = []
+
+        # 5. Merge Semantic Scores and Calculate Hybrid Scores
+        for result in deterministic_results:
+            # Ensure we are working with a dictionary
+            res_dict = result if isinstance(result, dict) else result.model_dump()
+            
+            recipe_id = res_dict.get("recipeId")
+            
+            # Map Day 9 keys to the strict Day 10 schema names
+            det_score = res_dict.get("deterministicScore") or res_dict.get("score", 0)
+            det_explanation = res_dict.get("deterministicExplanation") or res_dict.get("explanation", "Matched based on pantry.")
+            source_name = res_dict.get("sourceName") or res_dict.get("source_name", "PantryPilot")
+            
+            # Retrieve semantic score if it exists, otherwise default to 0
+            sem_score = semantic_scores.get(recipe_id, 0)
+            
+            # Calculate the final combined score
+            if retrieval_mode == "hybrid":
+                hybrid_score = calculate_hybrid_score(det_score, sem_score)
+            else:
+                hybrid_score = det_score
+
+            # Build a fresh dictionary that perfectly matches the Day 10 Pydantic model
+            valid_candidates.append({
+                "recipeId": recipe_id,
+                "title": res_dict.get("title", "Unknown Recipe"),
+                "totalMinutes": res_dict.get("totalMinutes", 0),
+                "coveragePercent": res_dict.get("coveragePercent", 0),
+                "matchedRequiredIngredients": res_dict.get("matchedRequiredIngredients", []),
+                "missingRequiredIngredients": res_dict.get("missingRequiredIngredients", []),
+                "assumedStaples": res_dict.get("assumedStaples", []),
+                "deterministicScore": det_score,
+                "deterministicExplanation": det_explanation,
+                "semanticScore": sem_score if retrieval_mode == "hybrid" else None,
+                "hybridScore": hybrid_score,
+                "sourceName": source_name,
+                "aiExplanation": None # This will be filled in Step 7
+            })
+
+        # 6. Sort the candidates using the strict Day 10 rules
+        sorted_results = sort_hybrid_results(valid_candidates)
+        
+        # 7. Truncate to the requested limit
+        limit = request.limit if request.limit else 5
+        final_results = sorted_results[:limit]
+
+        # Generate explanations for the top results (up to 3)
+        if retrieval_mode == "hybrid":
+            ai_explanations = generate_llm_explanations(final_results, request.queryText)
+            for res in final_results:
+                recipe_id = res.get("recipeId")
+                # Fall back to deterministic explanation if the LLM failed
+                res["aiExplanation"] = ai_explanations.get(recipe_id, None)
+
+        # 8. Return the strict contract requirements
         return {
-            "algorithmVersion": "deterministic-v1",
-            "generatedAt": datetime.utcnow().isoformat() + "Z",
-            "pantryItemCount": len(pantry_summary),
-            "filters": request.dict(),
-            "results": ranked_results
+            "algorithmVersion": "hybrid-v1",
+            "retrievalMode": retrieval_mode,
+            "queryText": request.queryText,
+            "pantryItemCount": len(user_pantry.keys()),
+            "results": final_results
         }
+        
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        print(f"Error in recommendation engine: {e}")
+        raise HTTPException(status_code=500, detail="Failed to generate recommendations.")
 
 
 # --- Inventory Routes ---
@@ -122,23 +192,42 @@ async def process_inventory_action(item_id: str, payload: InventoryActionRequest
         raise HTTPException(status_code=400, detail=str(e))
 
 @app.post("/api/inventory/manual")
-async def add_manual_item(payload: NewItemRequest, client: Client = Depends(get_user_supabase)):
+async def add_manual_item(payload: NewItemRequest, request: Request, client: Client = Depends(get_user_supabase)):
     try:
+        # 1. Extract the token and get the user ID
+        token = request.headers.get("Authorization").replace("Bearer ", "")
+        user_res = client.auth.get_user(token)
+        user_id = user_res.user.id
+
+        # 2. Insert the item with the user_id explicitly attached
         item_response = client.table("pantry_items").insert({
-            "name": payload.name, "category": payload.category.lower(),
-            "current_quantity": payload.quantity, "unit": payload.unit,
-            "purchase_date": payload.purchase_date, "source_type": "manual", "status": "active"
+            "user_id": user_id,  # <-- This was the missing piece!
+            "name": payload.name, 
+            "category": payload.category.lower(),
+            "current_quantity": payload.quantity, 
+            "unit": payload.unit,
+            "purchase_date": payload.purchase_date, 
+            "source_type": "manual", 
+            "status": "active"
         }).execute()
+        
         new_item = item_response.data[0]
 
+        # 3. Create the inventory event with the user_id explicitly attached!
         client.table("inventory_events").insert({
-            "pantry_item_id": new_item["id"], "event_type": "manual_add",
-            "quantity_delta": payload.quantity, "quantity_before": 0,
-            "quantity_after": payload.quantity, "unit": payload.unit, "note": "Added manually"
+            "user_id": user_id,  # <-- Add this line right here!
+            "pantry_item_id": new_item["id"], 
+            "event_type": "manual_add",
+            "quantity_delta": payload.quantity, 
+            "quantity_before": 0,
+            "quantity_after": payload.quantity, 
+            "unit": payload.unit, 
+            "note": "Added manually"
         }).execute()
 
         return {"success": True, "data": new_item}
     except Exception as e:
+        print(f"Error adding manual item: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -234,3 +323,134 @@ def approve_receipt(receipt_id: str, payload: ApprovalPayload, client: Client = 
 
     client.table("receipts").update({"status": "completed", "approved_at": datetime.utcnow().isoformat()}).eq("id", receipt_id).execute()
     return {"status": "completed", "pantryItemsCreated": len(pantry_inserts)}
+
+# --- User Actions Routes ---
+
+@app.post("/api/recipes/{recipe_id}/save")
+async def save_recipe(recipe_id: str, payload: SaveRecipeRequest, request: Request, client: Client = Depends(get_user_supabase)):
+    try:
+        token = request.headers.get("Authorization").replace("Bearer ", "")
+        user_res = client.auth.get_user(token)
+        user_id = user_res.user.id
+
+        client.table("saved_recipes").upsert({
+            "user_id": user_id,
+            "recipe_id": recipe_id,
+            "recommendation_run_id": payload.recommendationRunId
+        }, on_conflict="user_id, recipe_id").execute()
+
+        client.table("recipe_user_actions").insert({
+            "user_id": user_id,
+            "recipe_id": recipe_id,
+            "recommendation_run_id": payload.recommendationRunId,
+            "action_type": "saved"
+        }).execute()
+
+        return {"success": True, "message": "Recipe saved."}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.delete("/api/recipes/{recipe_id}/save")
+async def unsave_recipe(recipe_id: str, request: Request, client: Client = Depends(get_user_supabase)):
+    try:
+        token = request.headers.get("Authorization").replace("Bearer ", "")
+        user_res = client.auth.get_user(token)
+        user_id = user_res.user.id
+
+        client.table("saved_recipes").delete().eq("user_id", user_id).eq("recipe_id", recipe_id).execute()
+
+        client.table("recipe_user_actions").insert({
+            "user_id": user_id,
+            "recipe_id": recipe_id,
+            "action_type": "unsaved"
+        }).execute()
+
+        return {"success": True, "message": "Recipe unsaved."}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/recommendations/{run_id}/recipes/{recipe_id}/dismiss")
+async def dismiss_recommendation(run_id: str, recipe_id: str, payload: DismissRecipeRequest, request: Request, client: Client = Depends(get_user_supabase)):
+    try:
+        token = request.headers.get("Authorization").replace("Bearer ", "")
+        user_res = client.auth.get_user(token)
+        user_id = user_res.user.id
+
+        client.table("recipe_user_actions").insert({
+            "user_id": user_id,
+            "recommendation_run_id": run_id,
+            "recipe_id": recipe_id,
+            "action_type": "dismissed",
+            "reason": payload.reason,
+            "note": payload.note
+        }).execute()
+
+        return {"success": True, "message": "Recommendation dismissed."}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/recipes/{recipe_id}/feedback")
+async def recipe_feedback(recipe_id: str, payload: RecipeFeedbackRequest, request: Request, client: Client = Depends(get_user_supabase)):
+    try:
+        token = request.headers.get("Authorization").replace("Bearer ", "")
+        user_res = client.auth.get_user(token)
+        user_id = user_res.user.id
+
+        client.table("recipe_user_actions").insert({
+            "user_id": user_id,
+            "recommendation_run_id": payload.recommendationRunId,
+            "recipe_id": recipe_id,
+            "action_type": payload.actionType,
+            "reason": payload.reason,
+            "note": payload.note
+        }).execute()
+
+        return {"success": True, "message": "Feedback recorded."}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/recipes/{recipe_id}/cooking-draft")
+async def generate_cooking_draft(recipe_id: str, client: Client = Depends(get_user_supabase)):
+    try:
+        ingredients_res = client.table("recipe_ingredients").select("*").eq("recipe_id", recipe_id).execute()
+        recipe_ingredients = ingredients_res.data
+        
+        pantry_res = client.table("pantry_items").select("*").eq("status", "active").execute()
+        active_pantry = pantry_res.data
+        
+        proposal = build_consumption_proposal(recipe_id, recipe_ingredients, active_pantry)
+        
+        return {"success": True, "data": proposal}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/recipes/{recipe_id}/cooking-complete")
+async def complete_cooking_session(recipe_id: str, payload: CookingCompleteRequest, request: Request, client: Client = Depends(get_user_supabase)):
+    try:
+        token = request.headers.get("Authorization").replace("Bearer ", "")
+        user_res = client.auth.get_user(token)
+        user_id = user_res.user.id
+        
+        deductions_json = [item.dict() for item in payload.deductions]
+
+        response = client.rpc(
+            "confirm_cooking_session",
+            {
+                "p_user_id": user_id,
+                "p_recipe_id": recipe_id,
+                "p_run_id": payload.recommendationRunId,
+                "p_idempotency_key": payload.idempotencyKey,
+                "p_deductions": deductions_json
+            }
+        ).execute()
+        
+        return response.data
+        
+    except Exception as e:
+        error_msg = str(e)
+        if "Insufficient quantity" in error_msg:
+            raise HTTPException(status_code=400, detail="One or more items have insufficient quantity. Please review your inventory.")
+        elif "Pantry item" in error_msg and "changed" in error_msg:
+            raise HTTPException(status_code=409, detail="Your pantry inventory changed after this review was created. Please refresh.")
+        raise HTTPException(status_code=500, detail=f"Database error: {error_msg}")
