@@ -4,6 +4,11 @@ import uuid
 import json
 from datetime import datetime
 from dotenv import load_dotenv
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 
 # 1. LOAD ENV VARS FIRST! 
 # This must happen before importing app.engine so Gemini can find the key.
@@ -419,6 +424,14 @@ async def generate_cooking_draft(recipe_id: str, client: Client = Depends(get_us
         active_pantry = pantry_res.data
         
         proposal = build_consumption_proposal(recipe_id, recipe_ingredients, active_pantry)
+
+        logger.info(json.dumps({
+            "operation": "recipe_recommendation",
+            "recipeId": recipe_id,
+            "status": "success",
+            "resultCount": len(proposal.get("items", [])),
+            "fallbackUsed": False
+        }))
         
         return {"success": True, "data": proposal}
         
@@ -454,3 +467,35 @@ async def complete_cooking_session(recipe_id: str, payload: CookingCompleteReque
         elif "Pantry item" in error_msg and "changed" in error_msg:
             raise HTTPException(status_code=409, detail="Your pantry inventory changed after this review was created. Please refresh.")
         raise HTTPException(status_code=500, detail=f"Database error: {error_msg}")
+
+@app.post("/api/test/receipt-extract/fake-success")
+async def fake_receipt_extraction():
+    """
+    Mock endpoint that returns a predictable synthetic receipt.
+    Use this for end-to-end tests instead of the live OCR provider.
+    """
+    return {
+        "success": True,
+        "data": {
+            "storeName": "Test Grocery",
+            "purchaseDate": "2026-08-10",
+            "currency": "USD",
+            "items": [
+                {
+                    "rawText": "EGGS LG 12CT",
+                    "normalizedName": "egg",
+                    "quantity": 12,
+                    "unit": "each",
+                    "price": 4.29
+                },
+                {
+                    "rawText": "ORGANIC CARROTS 1LB",
+                    "normalizedName": "carrot",
+                    "quantity": 4,
+                    "unit": "each",
+                    "price": 1.99
+                }
+            ],
+            "warnings": []
+        }
+    }

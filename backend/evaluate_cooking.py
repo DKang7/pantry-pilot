@@ -4,7 +4,7 @@ from supabase import create_client, Client
 
 # --- Configuration ---
 API_URL = "http://127.0.0.1:8000/api"
-TEST_RECIPE_ID = "002539eb-2914-4e0d-acdf-01c3d2b21bfa" # Put a valid recipe ID from your database here
+TEST_RECIPE_ID = "21c441dc-3879-4b82-bb49-67e22619f4d3" # Put a valid recipe ID from your database here
 
 # Fill these in with your Supabase details and test account
 SUPABASE_URL = "https://zcgswnockjwttpiqsrvj.supabase.co"
