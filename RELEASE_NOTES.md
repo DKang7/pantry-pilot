@@ -9,27 +9,27 @@
 
 **Features Included**
 * Receipt upload and extraction.
-* Human review and approval[cite: 2].
-* Pantry inventory lifecycle[cite: 2].
-* Recipe corpus[cite: 2].
-* Deterministic matching[cite: 2].
-* Semantic retrieval[cite: 2].
-* Grounded explanations[cite: 2].
-* Cooking confirmation[cite: 2].
-* Pantry deduction history[cite: 2].
+* Human review and approval.
+* Pantry inventory lifecycle.
+* Recipe corpus.
+* Deterministic matching.
+* Semantic retrieval.
+* Grounded explanations.
+* Cooking confirmation.
+* Pantry deduction history.
 
 **Known Limitations**
-* Receipt item names may require correction[cite: 2].
-* Complex unit conversion is not supported[cite: 2].
-* Ingredient presence does not always prove quantity sufficiency[cite: 2].
-* Ingredient exclusions are not allergy-safety guarantees[cite: 2].
-* Free-tier services may introduce latency or availability limitations[cite: 2].
-* The recipe corpus is limited[cite: 2].
-* Original receipt images may be sent to a third-party extraction provider[cite: 2].
+* Receipt item names may require correction.
+* Complex unit conversion is not supported.
+* Ingredient presence does not always prove quantity sufficiency.
+* Ingredient exclusions are not allergy-safety guarantees.
+* Free-tier services may introduce latency or availability limitations.
+* The recipe corpus is limited.
+* Original receipt images may be sent to a third-party extraction provider.
 
 **Deferred Features**
-* Shared household accounts[cite: 2].
-* Native mobile applications[cite: 2].
-* Barcode scanning[cite: 2].
-* Expiration prediction[cite: 2].
-* Nutrition optimization[cite: 2].
+* Shared household accounts.
+* Native mobile applications.
+* Barcode scanning.
+* Expiration prediction.
+* Nutrition optimization.
