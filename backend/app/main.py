@@ -139,6 +139,9 @@ def get_user_supabase(request: Request) -> Client:
 # ==========================================
 #                  ROUTES
 # ==========================================
+@app.get("/")
+def read_root():
+    return {"message": "PantryPilot API is running. Check /api/health for status."}
 
 @app.get("/api/health")
 def health_check():
