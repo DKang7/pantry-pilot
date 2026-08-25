@@ -66,6 +66,10 @@ async def lifespan(app: FastAPI):
 # --- App Initialization ---
 app = FastAPI(title=settings.PROJECT_NAME, lifespan=lifespan)
 
+# --- Basic Rate Limiting & Feature Flags ---
+request_counts = {}
+ENABLE_LLM_EXPLANATIONS = os.getenv("ENABLE_LLM_EXPLANATIONS", "true").lower() == "true"
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -169,6 +173,12 @@ def dependency_health_check():
 async def get_recommendations(request: RecommendationRequest):
     """Endpoint for returning deterministically ranked and semantically retrieved recipe recommendations."""
     try:
+        # Basic MVP Rate Limit: Prevent abuse by checking IP (simplified for this assignment)[cite: 2]
+        client_ip = request.client.host if request.client else "unknown"
+        request_counts[client_ip] = request_counts.get(client_ip, 0) + 1
+        if request_counts[client_ip] > 50:
+            raise HTTPException(status_code=429, detail="Too many recommendation requests. Try again later.")
+        
         # 1. Fetch user's active pantry inventory
         pantry_res = supabase.table("pantry_items").select("*").eq("status", "active").execute()
         user_pantry = summarize_pantry(pantry_res.data)
@@ -232,7 +242,7 @@ async def get_recommendations(request: RecommendationRequest):
         final_results = sorted_results[:limit]
 
         # Generate explanations for the top results
-        if retrieval_mode == "hybrid":
+        if retrieval_mode == "hybrid" and ENABLE_LLM_EXPLANATIONS:
             ai_explanations = generate_llm_explanations(final_results, request.queryText)
             for res in final_results:
                 recipe_id = res.get("recipeId")
