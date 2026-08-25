@@ -6,6 +6,7 @@ import json
 import logging
 from datetime import datetime
 from contextlib import asynccontextmanager
+import time
 
 # --- Third-Party Imports ---
 from dotenv import load_dotenv
@@ -43,7 +44,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # --- Environment Validation ---
-# Required server-side configuration variables[cite: 2]
+# Required server-side configuration variables
 REQUIRED_ENV_VARS = [
     "NEXT_PUBLIC_SUPABASE_URL",
     "SUPABASE_SERVICE_ROLE_KEY",
@@ -56,7 +57,7 @@ async def lifespan(app: FastAPI):
     missing_vars = [var for var in REQUIRED_ENV_VARS if not os.getenv(var)]
     if missing_vars:
         logger.error(f"Deployment failed: Missing required environment variables: {', '.join(missing_vars)}")
-        # Exit immediately to prevent a broken production deployment[cite: 2]
+        # Exit immediately to prevent a broken production deployment
         sys.exit(1)
     
     logger.info("Environment configuration validated successfully.")
@@ -72,6 +73,40 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.middleware("http")
+async def add_request_id_and_log(request: Request, call_next):
+    # Generate a unique request ID like "req_7f49b18"
+    request_id = f"req_{uuid.uuid4().hex[:7]}"
+    start_time = time.time()
+    
+    # Process the actual request
+    try:
+        response = await call_next(request)
+        status_code = response.status_code
+    except Exception as e:
+        status_code = 500
+        raise e
+    finally:
+        duration_ms = int((time.time() - start_time) * 1000)
+        
+        # Log the operation securely as structured JSON
+        logger.info(json.dumps({
+            "timestamp": datetime.utcnow().isoformat() + "Z",
+            "level": "error" if status_code >= 400 else "info",
+            "requestId": request_id,
+            "operation": f"{request.method} {request.url.path}",
+            "applicationVersion": "v0.1.0-beta.1",
+            "status": "failed" if status_code >= 400 else "success",
+            "durationMs": duration_ms,
+            "fallbackUsed": False
+        }))
+        
+        # Return the ID in the headers so the frontend can display it if an error occurs
+        if 'response' in locals():
+            response.headers["X-Request-ID"] = request_id
+            
+    return response
 
 # --- Initialize External Clients ---
 url: str = os.environ.get("SUPABASE_URL", "")
@@ -113,7 +148,7 @@ def health_check():
 
 @app.get("/api/health/dependencies")
 def dependency_health_check():
-    """Checks lightweight availability without consuming AI quotas[cite: 2]."""
+    """Checks lightweight availability without consuming AI quotas."""
     try:
         # A lightweight query just to see if Supabase responds
         supabase.table("pantry_items").select("id").limit(1).execute()
@@ -124,8 +159,8 @@ def dependency_health_check():
     return {
         "status": "degraded" if db_status == "degraded" else "ok",
         "database": {"status": db_status},
-        "receiptExtraction": {"status": "unknown"}, # Mocked as unknown to save quota[cite: 2]
-        "llmExplanation": {"status": "unknown"}     # Mocked as unknown to save quota[cite: 2]
+        "receiptExtraction": {"status": "unknown"}, # Mocked as unknown to save quota
+        "llmExplanation": {"status": "unknown"}     # Mocked as unknown to save quota
     }
 
 
