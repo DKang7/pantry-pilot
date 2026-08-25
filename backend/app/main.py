@@ -46,9 +46,9 @@ logger = logging.getLogger(__name__)
 # --- Environment Validation ---
 # Required server-side configuration variables
 REQUIRED_ENV_VARS = [
-    "NEXT_PUBLIC_SUPABASE_URL",
-    "SUPABASE_SERVICE_ROLE_KEY",
-    "LLM_PROVIDER_API_KEY"
+    "SUPABASE_URL",
+    "SUPABASE_KEY",
+    "GEMINI_API_KEY"
 ]
 
 @asynccontextmanager
