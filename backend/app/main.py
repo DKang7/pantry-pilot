@@ -1,26 +1,25 @@
 import os
+import sys
 import shutil
 import uuid
 import json
-from datetime import datetime
-from dotenv import load_dotenv
 import logging
+from datetime import datetime
+from contextlib import asynccontextmanager
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-
-# 1. LOAD ENV VARS FIRST! 
-# This must happen before importing app.engine so Gemini can find the key.
-load_dotenv()
-
+# --- Third-Party Imports ---
+from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, UploadFile, File, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from supabase import create_client, Client, ClientOptions
 from google import genai
 from PIL import Image
 
-# Import configurations and local modules
+# 1. LOAD ENV VARS FIRST! 
+# This must happen before importing app.engine so Gemini can find the key.
+load_dotenv()
+
+# --- Local Imports ---
 from app.core.config import settings
 from app.models import (
     InventoryActionRequest, NewItemRequest, ApprovalPayload,
@@ -28,7 +27,6 @@ from app.models import (
     SaveRecipeRequest, DismissRecipeRequest, RecipeFeedbackRequest,
     DeductionItem, CookingCompleteRequest
 )
-
 from app.engine import (
     search_recipes_semantically,
     calculate_hybrid_score,
@@ -40,7 +38,32 @@ from app.engine import (
     build_consumption_proposal
 )
 
-app = FastAPI(title=settings.PROJECT_NAME)
+# --- Logging Setup ---
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# --- Environment Validation ---
+# Required server-side configuration variables[cite: 2]
+REQUIRED_ENV_VARS = [
+    "NEXT_PUBLIC_SUPABASE_URL",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "LLM_PROVIDER_API_KEY"
+]
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Validate environment variables on startup."""
+    missing_vars = [var for var in REQUIRED_ENV_VARS if not os.getenv(var)]
+    if missing_vars:
+        logger.error(f"Deployment failed: Missing required environment variables: {', '.join(missing_vars)}")
+        # Exit immediately to prevent a broken production deployment[cite: 2]
+        sys.exit(1)
+    
+    logger.info("Environment configuration validated successfully.")
+    yield
+
+# --- App Initialization ---
+app = FastAPI(title=settings.PROJECT_NAME, lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -50,14 +73,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Initialize External Clients
+# --- Initialize External Clients ---
 url: str = os.environ.get("SUPABASE_URL", "")
 key: str = os.environ.get("SUPABASE_KEY", "")
 if not url or not key:
     print("🚨 WARNING: SUPABASE_URL or SUPABASE_KEY is missing from environment variables!")
 supabase: Client = create_client(url, key)
 
-# Initialize Gemini Client explicitly
 gemini_api_key = os.environ.get("GEMINI_API_KEY")
 if not gemini_api_key:
     print("🚨 WARNING: GEMINI_API_KEY is missing from environment variables!")
@@ -66,7 +88,7 @@ genai_client = genai.Client(api_key=gemini_api_key)
 UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-# Authentication Dependency
+# --- Authentication Dependency ---
 def get_user_supabase(request: Request) -> Client:
     auth_header = request.headers.get("Authorization")
     if not auth_header or not auth_header.startswith("Bearer "):
@@ -74,13 +96,40 @@ def get_user_supabase(request: Request) -> Client:
     token = auth_header.replace("Bearer ", "")
     return create_client(url, key, options=ClientOptions(headers={"Authorization": f"Bearer {token}"}))
 
-@app.get("/")
+
+# ==========================================
+#                  ROUTES
+# ==========================================
+
+@app.get("/api/health")
 def health_check():
-    return {"status": "PantryPilot API is live"}
+    """Basic health endpoint that exposes no secrets."""
+    return {
+        "status": "ok",
+        "version": "v0.1.0-beta.1",
+        "buildTime": "2026-08-24T12:00:00Z",
+        "environment": "production"
+    }
+
+@app.get("/api/health/dependencies")
+def dependency_health_check():
+    """Checks lightweight availability without consuming AI quotas[cite: 2]."""
+    try:
+        # A lightweight query just to see if Supabase responds
+        supabase.table("pantry_items").select("id").limit(1).execute()
+        db_status = "ok"
+    except Exception:
+        db_status = "degraded"
+
+    return {
+        "status": "degraded" if db_status == "degraded" else "ok",
+        "database": {"status": db_status},
+        "receiptExtraction": {"status": "unknown"}, # Mocked as unknown to save quota[cite: 2]
+        "llmExplanation": {"status": "unknown"}     # Mocked as unknown to save quota[cite: 2]
+    }
 
 
 # --- Recommendations Routes ---
-
 @app.post("/api/recommendations", response_model=RecommendationResponse)
 async def get_recommendations(request: RecommendationRequest):
     """Endpoint for returning deterministically ranked and semantically retrieved recipe recommendations."""
@@ -103,33 +152,27 @@ async def get_recommendations(request: RecommendationRequest):
             if semantic_scores:
                 retrieval_mode = "hybrid"
 
-        # 4. Get Deterministic Results (This applies your Day 9 hard filters and calculates scores)
+        # 4. Get Deterministic Results (This applies your hard filters and calculates scores)
         deterministic_results = rank_recipes(user_pantry, recipe_candidates, request)
 
         valid_candidates = []
 
         # 5. Merge Semantic Scores and Calculate Hybrid Scores
         for result in deterministic_results:
-            # Ensure we are working with a dictionary
             res_dict = result if isinstance(result, dict) else result.model_dump()
-            
             recipe_id = res_dict.get("recipeId")
             
-            # Map Day 9 keys to the strict Day 10 schema names
             det_score = res_dict.get("deterministicScore") or res_dict.get("score", 0)
             det_explanation = res_dict.get("deterministicExplanation") or res_dict.get("explanation", "Matched based on pantry.")
             source_name = res_dict.get("sourceName") or res_dict.get("source_name", "PantryPilot")
             
-            # Retrieve semantic score if it exists, otherwise default to 0
             sem_score = semantic_scores.get(recipe_id, 0)
             
-            # Calculate the final combined score
             if retrieval_mode == "hybrid":
                 hybrid_score = calculate_hybrid_score(det_score, sem_score)
             else:
                 hybrid_score = det_score
 
-            # Build a fresh dictionary that perfectly matches the Day 10 Pydantic model
             valid_candidates.append({
                 "recipeId": recipe_id,
                 "title": res_dict.get("title", "Unknown Recipe"),
@@ -143,22 +186,21 @@ async def get_recommendations(request: RecommendationRequest):
                 "semanticScore": sem_score if retrieval_mode == "hybrid" else None,
                 "hybridScore": hybrid_score,
                 "sourceName": source_name,
-                "aiExplanation": None # This will be filled in Step 7
+                "aiExplanation": None # Filled in Step 7
             })
 
-        # 6. Sort the candidates using the strict Day 10 rules
+        # 6. Sort the candidates
         sorted_results = sort_hybrid_results(valid_candidates)
         
         # 7. Truncate to the requested limit
         limit = request.limit if request.limit else 5
         final_results = sorted_results[:limit]
 
-        # Generate explanations for the top results (up to 3)
+        # Generate explanations for the top results
         if retrieval_mode == "hybrid":
             ai_explanations = generate_llm_explanations(final_results, request.queryText)
             for res in final_results:
                 recipe_id = res.get("recipeId")
-                # Fall back to deterministic explanation if the LLM failed
                 res["aiExplanation"] = ai_explanations.get(recipe_id, None)
 
         # 8. Return the strict contract requirements
@@ -171,12 +213,11 @@ async def get_recommendations(request: RecommendationRequest):
         }
         
     except Exception as e:
-        print(f"Error in recommendation engine: {e}")
+        logger.error(f"Error in recommendation engine: {e}")
         raise HTTPException(status_code=500, detail="Failed to generate recommendations.")
 
 
 # --- Inventory Routes ---
-
 @app.get("/api/inventory")
 async def get_pantry_inventory(client: Client = Depends(get_user_supabase)):
     try:
@@ -199,14 +240,12 @@ async def process_inventory_action(item_id: str, payload: InventoryActionRequest
 @app.post("/api/inventory/manual")
 async def add_manual_item(payload: NewItemRequest, request: Request, client: Client = Depends(get_user_supabase)):
     try:
-        # 1. Extract the token and get the user ID
         token = request.headers.get("Authorization").replace("Bearer ", "")
         user_res = client.auth.get_user(token)
         user_id = user_res.user.id
 
-        # 2. Insert the item with the user_id explicitly attached
         item_response = client.table("pantry_items").insert({
-            "user_id": user_id,  # <-- This was the missing piece!
+            "user_id": user_id,
             "name": payload.name, 
             "category": payload.category.lower(),
             "current_quantity": payload.quantity, 
@@ -218,9 +257,8 @@ async def add_manual_item(payload: NewItemRequest, request: Request, client: Cli
         
         new_item = item_response.data[0]
 
-        # 3. Create the inventory event with the user_id explicitly attached!
         client.table("inventory_events").insert({
-            "user_id": user_id,  # <-- Add this line right here!
+            "user_id": user_id,
             "pantry_item_id": new_item["id"], 
             "event_type": "manual_add",
             "quantity_delta": payload.quantity, 
@@ -232,12 +270,11 @@ async def add_manual_item(payload: NewItemRequest, request: Request, client: Cli
 
         return {"success": True, "data": new_item}
     except Exception as e:
-        print(f"Error adding manual item: {e}")
+        logger.error(f"Error adding manual item: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
 # --- Receipt Routes ---
-
 @app.post("/api/receipts")
 async def upload_receipt(file: UploadFile = File(...), client: Client = Depends(get_user_supabase)):
     allowed_types = ["image/jpeg", "image/png", "application/pdf"]
@@ -329,8 +366,8 @@ def approve_receipt(receipt_id: str, payload: ApprovalPayload, client: Client = 
     client.table("receipts").update({"status": "completed", "approved_at": datetime.utcnow().isoformat()}).eq("id", receipt_id).execute()
     return {"status": "completed", "pantryItemsCreated": len(pantry_inserts)}
 
-# --- User Actions Routes ---
 
+# --- User Actions Routes ---
 @app.post("/api/recipes/{recipe_id}/save")
 async def save_recipe(recipe_id: str, payload: SaveRecipeRequest, request: Request, client: Client = Depends(get_user_supabase)):
     try:
