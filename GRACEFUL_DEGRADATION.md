@@ -2,10 +2,10 @@
 
 | Failed Component | Expected Behavior |
 | :--- | :--- |
-| **Receipt Extraction** | Show retry and manual-entry options[cite: 2]. |
-| **Embedding Provider** | Use deterministic recipe matching[cite: 2]. |
-| **Vector Search** | Use deterministic recipe matching[cite: 2]. |
-| **LLM Explanation** | Use deterministic explanation[cite: 2]. |
-| **Supabase Storage** | Block receipt upload safely[cite: 2]. |
-| **Supabase Database** | Show temporary service error; do not show an incorrect empty pantry[cite: 2]. |
-| **Recipe Data** | Explain that recommendations are unavailable[cite: 2]. |
+| **Receipt Extraction** | Show retry and manual-entry options. |
+| **Embedding Provider** | Use deterministic recipe matching. |
+| **Vector Search** | Use deterministic recipe matching. |
+| **LLM Explanation** | Use deterministic explanation. |
+| **Supabase Storage** | Block receipt upload safely. |
+| **Supabase Database** | Show temporary service error; do not show an incorrect empty pantry. |
+| **Recipe Data** | Explain that recommendations are unavailable. |
