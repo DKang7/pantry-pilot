@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
-// Initialize Supabase for the frontend
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || '',
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
@@ -14,34 +13,28 @@ type PantryItem = {
   name: string;
   current_quantity: number;
   unit: string;
-  category: string;
   purchase_date: string;
   source_type: string;
 };
 
 export default function PantryDashboard() {
-  // Auth State
   const [session, setSession] = useState<any>(null);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [authLoading, setAuthLoading] = useState(true);
 
-  // Dashboard State
   const [items, setItems] = useState<PantryItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingItem, setEditingItem] = useState<PantryItem | null>(null);
   
-  // Form States
   const [newName, setNewName] = useState('');
   const [newQuantity, setNewQuantity] = useState('');
   const [newUnit, setNewUnit] = useState('each');
-  const [newCategory, setNewCategory] = useState('pantry');
   const [newDate, setNewDate] = useState(new Date().toISOString().split('T')[0]);
   const [editQuantity, setEditQuantity] = useState('');
   const [editNote, setEditNote] = useState('');
 
-  // 1. Listen for Auth Changes
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
@@ -55,15 +48,12 @@ export default function PantryDashboard() {
     return () => subscription.unsubscribe();
   }, []);
 
-  // 2. Fetch Inventory (Now requires an Auth Token)
   const fetchInventory = async () => {
     if (!session) return;
     setLoading(true);
     try {
-      const response = await fetch('https://pantry-pilot-akgi.onrender.com/api/inventory', {
-        headers: {
-          'Authorization': `Bearer ${session.access_token}`
-        }
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/inventory`, {
+        headers: { 'Authorization': `Bearer ${session.access_token}` }
       });
       if (response.ok) {
         const data = await response.json();
@@ -77,17 +67,14 @@ export default function PantryDashboard() {
   };
 
   useEffect(() => {
-    if (session) {
-      fetchInventory();
-    }
+    if (session) fetchInventory();
   }, [session]);
 
-  // Auth Handlers
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     const { error } = await supabase.auth.signUp({ email, password });
     if (error) alert(error.message);
-    else alert('Success! Check your email (or just log in if email confirmation is disabled in Supabase).');
+    else alert('Success! Check your email.');
   };
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -101,18 +88,17 @@ export default function PantryDashboard() {
     setItems([]);
   };
 
-  // Action Handlers (Adding Token to Headers)
   const handleManualAdd = async (e: React.FormEvent) => {
     e.preventDefault();
     const payload = {
       name: newName,
       quantity: parseFloat(newQuantity),
       unit: newUnit,
-      category: newCategory,
+      category: 'pantry',
       purchase_date: newDate
     };
 
-    const response = await fetch('https://pantry-pilot-akgi.onrender.com/api/inventory/manual', {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/inventory/manual`, {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
@@ -127,7 +113,6 @@ export default function PantryDashboard() {
       setNewName('');
       setNewQuantity('');
       setNewUnit('each');
-      setNewCategory('pantry');
       setNewDate(new Date().toISOString().split('T')[0]);
     }
   };
@@ -136,7 +121,7 @@ export default function PantryDashboard() {
     const amountToConsume = currentQty >= 1 ? 1 : currentQty;
     const payload = { action_type: 'consume', amount: amountToConsume, note: 'Quick consume from dashboard' };
 
-    const response = await fetch(`http://pantry-pilot-akgi.onrender.com/api/inventory/${itemId}/action`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/inventory/${itemId}/action`, {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
@@ -158,7 +143,7 @@ export default function PantryDashboard() {
       note: editNote || 'Manual adjustment'
     };
 
-    const response = await fetch(`http://pantry-pilot-akgi.onrender.com/api/inventory/${editingItem.id}/action`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/inventory/${editingItem.id}/action`, {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
@@ -181,7 +166,6 @@ export default function PantryDashboard() {
 
   if (authLoading) return <div className="p-8 text-center text-gray-500">Loading authentication...</div>;
 
-  // --- LOGIN SCREEN ---
   if (!session) {
     return (
       <div className="max-w-md mx-auto mt-20 p-6 bg-white rounded-lg shadow-md text-black">
@@ -204,7 +188,6 @@ export default function PantryDashboard() {
     );
   }
 
-  // --- DASHBOARD SCREEN ---
   return (
     <div className="max-w-5xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md text-black">
       <div className="flex justify-between items-center mb-6">
@@ -235,7 +218,6 @@ export default function PantryDashboard() {
               <tr className="bg-gray-100 border-b-2 border-gray-200">
                 <th className="p-3 text-sm font-semibold text-gray-700">Item</th>
                 <th className="p-3 text-sm font-semibold text-gray-700">Quantity</th>
-                <th className="p-3 text-sm font-semibold text-gray-700">Category</th>
                 <th className="p-3 text-sm font-semibold text-gray-700">Added</th>
                 <th className="p-3 text-sm font-semibold text-gray-700">Source</th>
                 <th className="p-3 text-sm font-semibold text-gray-700">Actions</th>
@@ -246,7 +228,6 @@ export default function PantryDashboard() {
                 <tr key={item.id} className="border-b border-gray-100 hover:bg-gray-50">
                   <td className="p-3 font-medium text-gray-900">{item.name}</td>
                   <td className="p-3 text-gray-700">{item.current_quantity} {item.unit}</td>
-                  <td className="p-3 text-gray-700 capitalize">{item.category || '-'}</td>
                   <td className="p-3 text-gray-700">{item.purchase_date || '-'}</td>
                   <td className="p-3 text-gray-700 capitalize">{item.source_type}</td>
                   <td className="p-3 space-x-2">
@@ -260,7 +241,6 @@ export default function PantryDashboard() {
         </div>
       )}
 
-      {/* Add Modal */}
       {showAddModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
           <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
@@ -280,16 +260,6 @@ export default function PantryDashboard() {
                   <input required type="text" value={newUnit} onChange={e => setNewUnit(e.target.value)} placeholder="e.g. oz, boxes" className="mt-1 w-full border p-2 rounded" />
                 </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Category</label>
-                <select value={newCategory} onChange={e => setNewCategory(e.target.value)} className="mt-1 w-full border p-2 rounded">
-                  <option value="produce">Produce</option>
-                  <option value="dairy">Dairy</option>
-                  <option value="meat">Meat</option>
-                  <option value="pantry">Pantry</option>
-                  <option value="snacks">Snacks</option>
-                </select>
-              </div>
               <div className="flex justify-end gap-2 mt-6">
                 <button type="button" onClick={() => setShowAddModal(false)} className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded">Cancel</button>
                 <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Save Item</button>
@@ -299,7 +269,6 @@ export default function PantryDashboard() {
         </div>
       )}
 
-      {/* Edit Modal */}
       {editingItem && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
           <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">

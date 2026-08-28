@@ -176,7 +176,7 @@ def dependency_health_check():
 async def get_recommendations(request: RecommendationRequest):
     """Endpoint for returning deterministically ranked and semantically retrieved recipe recommendations."""
     try:
-        # Basic MVP Rate Limit: Prevent abuse by checking IP (simplified for this assignment)[cite: 2]
+        # Basic MVP Rate Limit: Prevent abuse by checking IP (simplified for this assignment)
         client_ip = request.client.host if request.client else "unknown"
         request_counts[client_ip] = request_counts.get(client_ip, 0) + 1
         if request_counts[client_ip] > 50:
@@ -277,44 +277,109 @@ async def get_pantry_inventory(client: Client = Depends(get_user_supabase)):
 @app.post("/api/inventory/{item_id}/action")
 async def process_inventory_action(item_id: str, payload: InventoryActionRequest, client: Client = Depends(get_user_supabase)):
     try:
-        response = client.rpc(
-            "apply_inventory_change",
-            {"p_item_id": item_id, "p_event_type": payload.action_type, "p_amount": payload.amount, "p_note": payload.note}
-        ).execute()
-        return {"success": True, "data": response.data}
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-@app.post("/api/inventory/manual")
-async def add_manual_item(payload: NewItemRequest, request: Request, client: Client = Depends(get_user_supabase)):
-    try:
-        token = request.headers.get("Authorization").replace("Bearer ", "")
-        user_res = client.auth.get_user(token)
+        # Retrieve the user authenticated by the Dependency
+        user_res = client.auth.get_user()
         user_id = user_res.user.id
 
-        item_response = client.table("pantry_items").insert({
-            "user_id": user_id,
-            "name": payload.name, 
-            "category": payload.category.lower(),
-            "current_quantity": payload.quantity, 
-            "unit": payload.unit,
-            "purchase_date": payload.purchase_date, 
-            "source_type": "manual", 
-            "status": "active"
-        }).execute()
+        item = client.table("pantry_items").select("*").eq("id", item_id).eq("user_id", user_id).execute()
+        if not item.data:
+            raise HTTPException(status_code=404, detail="Item not found")
         
-        new_item = item_response.data[0]
+        current_item = item.data[0]
+        old_qty = current_item["current_quantity"]
+        
+        # Process requested action delta
+        if payload.action_type == "consume":
+            new_qty = max(0, old_qty - payload.amount)
+            qty_delta = -payload.amount
+        elif payload.action_type == "adjust":
+            new_qty = payload.amount
+            qty_delta = new_qty - old_qty
+        else:
+            raise HTTPException(status_code=400, detail="Invalid action type")
 
+        status = "depleted" if new_qty <= 0 else "active"
+
+        # Update the item row
+        client.table("pantry_items").update({
+            "current_quantity": new_qty,
+            "status": status
+        }).eq("id", item_id).execute()
+
+        # Log the modification securely in the history events table
         client.table("inventory_events").insert({
             "user_id": user_id,
-            "pantry_item_id": new_item["id"], 
-            "event_type": "manual_add",
-            "quantity_delta": payload.quantity, 
-            "quantity_before": 0,
-            "quantity_after": payload.quantity, 
-            "unit": payload.unit, 
-            "note": "Added manually"
+            "pantry_item_id": item_id, 
+            "event_type": payload.action_type,
+            "quantity_delta": qty_delta, 
+            "quantity_before": old_qty,
+            "quantity_after": new_qty, 
+            "unit": current_item["unit"], 
+            "note": payload.note
         }).execute()
+
+        return {"success": True}
+    except Exception as e:
+        logger.error(f"Error modifying item {item_id}: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/inventory/manual")
+async def add_manual_item(payload: NewItemRequest, client: Client = Depends(get_user_supabase)):
+    try:
+        # Retrieve the user authenticated by the Dependency
+        user_res = client.auth.get_user()
+        user_id = user_res.user.id
+
+        # 1. Check if item exists in active pantry to trigger consolidation
+        existing = client.table("pantry_items").select("*").eq("user_id", user_id).eq("name", payload.name).eq("status", "active").execute()
+        
+        if existing.data:
+            existing_item = existing.data[0]
+            new_qty = existing_item["current_quantity"] + payload.quantity
+            
+            # Consolidate and update existing record
+            item_response = client.table("pantry_items").update({
+                "current_quantity": new_qty
+            }).eq("id", existing_item["id"]).execute()
+            new_item = item_response.data[0]
+
+            # Log the consolidation
+            client.table("inventory_events").insert({
+                "user_id": user_id,
+                "pantry_item_id": new_item["id"], 
+                "event_type": "manual_add",
+                "quantity_delta": payload.quantity, 
+                "quantity_before": existing_item["current_quantity"],
+                "quantity_after": new_qty, 
+                "unit": payload.unit, 
+                "note": "Added manually (consolidated)"
+            }).execute()
+            
+        else:
+            # 2. Insert as a completely new row if it doesn't already exist
+            item_response = client.table("pantry_items").insert({
+                "user_id": user_id,
+                "name": payload.name, 
+                "category": payload.category.lower() if payload.category else "pantry",
+                "current_quantity": payload.quantity, 
+                "unit": payload.unit,
+                "purchase_date": payload.purchase_date, 
+                "source_type": "manual", 
+                "status": "active"
+            }).execute()
+            
+            new_item = item_response.data[0]
+
+            client.table("inventory_events").insert({
+                "user_id": user_id,
+                "pantry_item_id": new_item["id"], 
+                "event_type": "manual_add",
+                "quantity_delta": payload.quantity, 
+                "quantity_before": 0,
+                "quantity_after": payload.quantity, 
+                "unit": payload.unit, 
+                "note": "Added manually"
+            }).execute()
 
         return {"success": True, "data": new_item}
     except Exception as e:
