@@ -275,10 +275,10 @@ async def get_pantry_inventory(client: Client = Depends(get_user_supabase)):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/inventory/{item_id}/action")
-async def process_inventory_action(item_id: str, payload: InventoryActionRequest, client: Client = Depends(get_user_supabase)):
+async def process_inventory_action(item_id: str, payload: InventoryActionRequest, request: Request, client: Client = Depends(get_user_supabase)):
     try:
-        # Retrieve the user authenticated by the Dependency
-        user_res = client.auth.get_user()
+        token = request.headers.get("Authorization", "").replace("Bearer ", "")
+        user_res = client.auth.get_user(token)
         user_id = user_res.user.id
 
         item = client.table("pantry_items").select("*").eq("id", item_id).eq("user_id", user_id).execute()
@@ -288,7 +288,6 @@ async def process_inventory_action(item_id: str, payload: InventoryActionRequest
         current_item = item.data[0]
         old_qty = current_item["current_quantity"]
         
-        # Process requested action delta
         if payload.action_type == "consume":
             new_qty = max(0, old_qty - payload.amount)
             qty_delta = -payload.amount
@@ -300,13 +299,11 @@ async def process_inventory_action(item_id: str, payload: InventoryActionRequest
 
         status = "depleted" if new_qty <= 0 else "active"
 
-        # Update the item row
         client.table("pantry_items").update({
             "current_quantity": new_qty,
             "status": status
         }).eq("id", item_id).execute()
 
-        # Log the modification securely in the history events table
         client.table("inventory_events").insert({
             "user_id": user_id,
             "pantry_item_id": item_id, 
@@ -324,26 +321,23 @@ async def process_inventory_action(item_id: str, payload: InventoryActionRequest
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/inventory/manual")
-async def add_manual_item(payload: NewItemRequest, client: Client = Depends(get_user_supabase)):
+async def add_manual_item(payload: NewItemRequest, request: Request, client: Client = Depends(get_user_supabase)):
     try:
-        # Retrieve the user authenticated by the Dependency
-        user_res = client.auth.get_user()
+        token = request.headers.get("Authorization", "").replace("Bearer ", "")
+        user_res = client.auth.get_user(token)
         user_id = user_res.user.id
 
-        # 1. Check if item exists in active pantry to trigger consolidation
         existing = client.table("pantry_items").select("*").eq("user_id", user_id).eq("name", payload.name).eq("status", "active").execute()
         
         if existing.data:
             existing_item = existing.data[0]
             new_qty = existing_item["current_quantity"] + payload.quantity
             
-            # Consolidate and update existing record
             item_response = client.table("pantry_items").update({
                 "current_quantity": new_qty
             }).eq("id", existing_item["id"]).execute()
             new_item = item_response.data[0]
 
-            # Log the consolidation
             client.table("inventory_events").insert({
                 "user_id": user_id,
                 "pantry_item_id": new_item["id"], 
@@ -356,7 +350,6 @@ async def add_manual_item(payload: NewItemRequest, client: Client = Depends(get_
             }).execute()
             
         else:
-            # 2. Insert as a completely new row if it doesn't already exist
             item_response = client.table("pantry_items").insert({
                 "user_id": user_id,
                 "name": payload.name, 
