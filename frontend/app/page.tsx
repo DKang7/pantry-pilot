@@ -60,7 +60,7 @@ export default function PantryDashboard() {
     if (!session) return;
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:8000/api/inventory', {
+      const response = await fetch('https://pantry-pilot-akgi.onrender.com/api/inventory', {
         headers: {
           'Authorization': `Bearer ${session.access_token}`
         }
@@ -112,7 +112,7 @@ export default function PantryDashboard() {
       purchase_date: newDate
     };
 
-    const response = await fetch('http://localhost:8000/api/inventory/manual', {
+    const response = await fetch('https://pantry-pilot-akgi.onrender.com/api/inventory/manual', {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
@@ -136,7 +136,7 @@ export default function PantryDashboard() {
     const amountToConsume = currentQty >= 1 ? 1 : currentQty;
     const payload = { action_type: 'consume', amount: amountToConsume, note: 'Quick consume from dashboard' };
 
-    const response = await fetch(`http://localhost:8000/api/inventory/${itemId}/action`, {
+    const response = await fetch(`http://pantry-pilot-akgi.onrender.com/api/inventory/${itemId}/action`, {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
@@ -158,7 +158,7 @@ export default function PantryDashboard() {
       note: editNote || 'Manual adjustment'
     };
 
-    const response = await fetch(`http://localhost:8000/api/inventory/${editingItem.id}/action`, {
+    const response = await fetch(`http://pantry-pilot-akgi.onrender.com/api/inventory/${editingItem.id}/action`, {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
