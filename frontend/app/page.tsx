@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
+import Link from 'next/link';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || '',
@@ -192,10 +193,21 @@ export default function PantryDashboard() {
     <div className="max-w-5xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md text-black">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-2xl font-bold">Pantry Inventory</h1>
+          <h1 className="text-2xl font-bold">PantryPilot Dashboard</h1>
           <p className="text-sm text-gray-500 mt-1">Logged in as {session.user.email}</p>
         </div>
-        <div className="space-x-4">
+        
+        {/* Navigation & Actions */}
+        <div className="flex items-center space-x-6">
+          <Link href="/receipts" className="text-blue-600 hover:text-blue-800 text-sm font-semibold">
+            📸 Scan Receipt
+          </Link>
+          <Link href="/recipes" className="text-blue-600 hover:text-blue-800 text-sm font-semibold">
+            🍳 Find Recipes
+          </Link>
+          
+          <div className="border-l border-gray-300 h-6"></div> {/* Visual Divider */}
+          
           <button onClick={() => setShowAddModal(true)} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm font-medium">
             + Add Item Manually
           </button>
