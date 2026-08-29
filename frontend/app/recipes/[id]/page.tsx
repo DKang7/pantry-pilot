@@ -62,7 +62,8 @@ export default function RecipeDetailPage() {
     setIsSubmitting(true);
     setActionMessage("");
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/recipes/${id}/save`, {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL as string;
+      const res = await fetch(`${apiUrl}/api/recipes/${id}/save`, {
         method: "POST",
         headers: getHeaders(),
         body: JSON.stringify({ recommendationRunId: null }),
@@ -86,7 +87,8 @@ export default function RecipeDetailPage() {
     setIsSubmitting(true);
     setActionMessage("");
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/recipes/${id}/cooking-draft`, {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL as string;
+      const res = await fetch(`${apiUrl}/api/recipes/${id}/cooking-draft`, {
         method: "POST",
         headers: getHeaders(),
       });
@@ -132,7 +134,8 @@ export default function RecipeDetailPage() {
       }));
 
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/recipes/${id}/cooking-complete`, {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL as string;
+      const res = await fetch(`${apiUrl}/api/recipes/${id}/cooking-complete`, {
         method: "POST",
         headers: getHeaders(),
         body: JSON.stringify({

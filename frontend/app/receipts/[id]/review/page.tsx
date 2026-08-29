@@ -28,7 +28,7 @@ export default function ReviewReceiptPage() {
   useEffect(() => {
     async function fetchReceiptData() {
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL as string;
         const res = await fetch(`${apiUrl}/api/receipts/${receiptId}`);
         if (!res.ok) throw new Error('Failed to load receipt draft');
         
@@ -63,7 +63,7 @@ export default function ReviewReceiptPage() {
     setError(null);
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL as string;
       const res = await fetch(`${apiUrl}/api/receipts/${receiptId}/approve`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

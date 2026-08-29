@@ -616,35 +616,3 @@ async def complete_cooking_session(recipe_id: str, payload: CookingCompleteReque
         elif "Pantry item" in error_msg and "changed" in error_msg:
             raise HTTPException(status_code=409, detail="Your pantry inventory changed after this review was created. Please refresh.")
         raise HTTPException(status_code=500, detail=f"Database error: {error_msg}")
-
-@app.post("/api/test/receipt-extract/fake-success")
-async def fake_receipt_extraction():
-    """
-    Mock endpoint that returns a predictable synthetic receipt.
-    Use this for end-to-end tests instead of the live OCR provider.
-    """
-    return {
-        "success": True,
-        "data": {
-            "storeName": "Test Grocery",
-            "purchaseDate": "2026-08-10",
-            "currency": "USD",
-            "items": [
-                {
-                    "rawText": "EGGS LG 12CT",
-                    "normalizedName": "egg",
-                    "quantity": 12,
-                    "unit": "each",
-                    "price": 4.29
-                },
-                {
-                    "rawText": "ORGANIC CARROTS 1LB",
-                    "normalizedName": "carrot",
-                    "quantity": 4,
-                    "unit": "each",
-                    "price": 1.99
-                }
-            ],
-            "warnings": []
-        }
-    }

@@ -2,6 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+);
 
 export default function FindRecipesPage() {
   const [queryText, setQueryText] = useState("");
@@ -17,7 +23,9 @@ export default function FindRecipesPage() {
     setError("");
     setResults(null);
 
-    const token = localStorage.getItem("supabase_token");
+    const { data: { session } } = await supabase.auth.getSession();
+    const token = session?.access_token;
+
     if (!token) {
       setError("You must be logged in to find recipes.");
       setLoading(false);
@@ -33,7 +41,8 @@ export default function FindRecipesPage() {
     };
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/recommendations", {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL as string;
+      const res = await fetch(`${apiUrl}/api/recommendations`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

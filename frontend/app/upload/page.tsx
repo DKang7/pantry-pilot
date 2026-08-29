@@ -31,7 +31,7 @@ export default function UploadReceiptPage() {
     formData.append('file', file);
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL as string;
       const response = await fetch(`${apiUrl}/api/receipts`, {
         method: 'POST',
         body: formData,
