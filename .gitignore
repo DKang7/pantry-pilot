@@ -18,3 +18,5 @@ backend/.pytest_cache/
 # OS / Docker
 .DS_Store
 EOF
+
+PROJECT_CONTEXT.md

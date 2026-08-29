@@ -6,6 +6,7 @@ from typing import List, Optional
 class InventoryActionRequest(BaseModel):
     action_type: str
     amount: float
+    unit: Optional[str] = None
     note: Optional[str] = None
 
 class NewItemRequest(BaseModel):

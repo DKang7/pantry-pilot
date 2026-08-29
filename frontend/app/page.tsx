@@ -34,6 +34,7 @@ export default function PantryDashboard() {
   const [newUnit, setNewUnit] = useState('each');
   const [newDate, setNewDate] = useState(new Date().toISOString().split('T')[0]);
   const [editQuantity, setEditQuantity] = useState('');
+  const [editUnit, setEditUnit] = useState('');
   const [editNote, setEditNote] = useState('');
 
   useEffect(() => {
@@ -141,7 +142,33 @@ export default function PantryDashboard() {
     const payload = {
       action_type: 'adjust',
       amount: parseFloat(editQuantity),
+      unit: editUnit,
       note: editNote || 'Manual adjustment'
+    };
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/inventory/${editingItem.id}/action`, {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session.access_token}`
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (response.ok) {
+      setEditingItem(null);
+      fetchInventory();
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!editingItem) return;
+
+    const payload = {
+      action_type: 'adjust',
+      amount: 0,
+      unit: editingItem.unit,
+      note: 'Deleted from dashboard'
     };
 
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/inventory/${editingItem.id}/action`, {
@@ -162,6 +189,7 @@ export default function PantryDashboard() {
   const openEditModal = (item: PantryItem) => {
     setEditingItem(item);
     setEditQuantity(item.current_quantity.toString());
+    setEditUnit(item.unit);
     setEditNote('');
   };
 
@@ -202,7 +230,7 @@ export default function PantryDashboard() {
           <Link href="/receipts/upload" className="text-blue-600 hover:text-blue-800 text-sm font-semibold">
             📸 Scan Receipt
           </Link>
-          <Link href="/recipes" className="text-blue-600 hover:text-blue-800 text-sm font-semibold">
+          <Link href="/find-recipes" className="text-blue-600 hover:text-blue-800 text-sm font-semibold">
             🍳 Find Recipes
           </Link>
           
@@ -231,7 +259,6 @@ export default function PantryDashboard() {
                 <th className="p-3 text-sm font-semibold text-gray-700">Item</th>
                 <th className="p-3 text-sm font-semibold text-gray-700">Quantity</th>
                 <th className="p-3 text-sm font-semibold text-gray-700">Added</th>
-                <th className="p-3 text-sm font-semibold text-gray-700">Source</th>
                 <th className="p-3 text-sm font-semibold text-gray-700">Actions</th>
               </tr>
             </thead>
@@ -241,7 +268,6 @@ export default function PantryDashboard() {
                   <td className="p-3 font-medium text-gray-900">{item.name}</td>
                   <td className="p-3 text-gray-700">{item.current_quantity} {item.unit}</td>
                   <td className="p-3 text-gray-700">{item.purchase_date || '-'}</td>
-                  <td className="p-3 text-gray-700 capitalize">{item.source_type}</td>
                   <td className="p-3 space-x-2">
                     <button onClick={() => handleConsume(item.id, item.current_quantity)} className="text-blue-600 hover:underline text-sm font-medium">Consume 1</button>
                     <button onClick={() => openEditModal(item)} className="text-gray-500 hover:underline text-sm font-medium">Edit</button>
@@ -286,17 +312,26 @@ export default function PantryDashboard() {
           <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
             <h2 className="text-xl font-bold mb-4">Adjust {editingItem.name}</h2>
             <form onSubmit={handleAdjust} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">New Total Quantity ({editingItem.unit})</label>
-                <input required type="number" step="0.01" min="0" value={editQuantity} onChange={e => setEditQuantity(e.target.value)} className="mt-1 w-full border p-2 rounded" />
+              <div className="flex gap-4">
+                <div className="flex-1">
+                  <label className="block text-sm font-medium text-gray-700">New Quantity</label>
+                  <input required type="number" step="0.01" min="0" value={editQuantity} onChange={e => setEditQuantity(e.target.value)} className="mt-1 w-full border p-2 rounded" />
+                </div>
+                <div className="flex-1">
+                  <label className="block text-sm font-medium text-gray-700">Unit</label>
+                  <input required type="text" value={editUnit} onChange={e => setEditUnit(e.target.value)} className="mt-1 w-full border p-2 rounded" />
+                </div>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">Reason for change (optional)</label>
                 <input type="text" value={editNote} onChange={e => setEditNote(e.target.value)} placeholder="e.g. Dropped one, typo" className="mt-1 w-full border p-2 rounded" />
               </div>
-              <div className="flex justify-end gap-2 mt-6">
-                <button type="button" onClick={() => setEditingItem(null)} className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded">Cancel</button>
-                <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Update Item</button>
+              <div className="flex justify-between items-center mt-6">
+                <button type="button" onClick={handleDelete} className="px-4 py-2 bg-red-100 text-red-600 hover:bg-red-200 rounded font-medium text-sm">Delete Item</button>
+                <div className="flex gap-2">
+                  <button type="button" onClick={() => setEditingItem(null)} className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded">Cancel</button>
+                  <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Update Item</button>
+                </div>
               </div>
             </form>
           </div>

@@ -267,7 +267,7 @@ async def get_recommendations(request: RecommendationRequest):
 
 # --- Inventory Routes ---
 @app.get("/api/inventory")
-async def get_pantry_inventory(client: Client = Depends(get_user_supabase)):
+async def get_pantry_inventory(request: Request, client: Client = Depends(get_user_supabase)):
     try:
         response = client.table("pantry_items").select("*").in_("status", ["active"]).execute()
         return response.data
@@ -298,11 +298,17 @@ async def process_inventory_action(item_id: str, payload: InventoryActionRequest
             raise HTTPException(status_code=400, detail="Invalid action type")
 
         status = "depleted" if new_qty <= 0 else "active"
-
-        client.table("pantry_items").update({
+        
+        update_fields = {
             "current_quantity": new_qty,
             "status": status
-        }).eq("id", item_id).execute()
+        }
+        
+        if payload.action_type == "adjust" and hasattr(payload, 'unit') and payload.unit:
+            update_fields["unit"] = payload.unit
+            current_item["unit"] = payload.unit
+
+        client.table("pantry_items").update(update_fields).eq("id", item_id).execute()
 
         client.table("inventory_events").insert({
             "user_id": user_id,
@@ -382,7 +388,7 @@ async def add_manual_item(payload: NewItemRequest, request: Request, client: Cli
 
 # --- Receipt Routes ---
 @app.post("/api/receipts")
-async def upload_receipt(file: UploadFile = File(...), client: Client = Depends(get_user_supabase)):
+async def upload_receipt(request: Request, file: UploadFile = File(...), client: Client = Depends(get_user_supabase)):
     allowed_types = ["image/jpeg", "image/png", "application/pdf"]
     if file.content_type not in allowed_types:
         raise HTTPException(status_code=400, detail="File type not supported.")
@@ -436,7 +442,7 @@ async def upload_receipt(file: UploadFile = File(...), client: Client = Depends(
     return {"receiptId": receipt_id, "status": "needs_review"}
 
 @app.get("/api/receipts/{receipt_id}")
-def get_receipt_review(receipt_id: str, client: Client = Depends(get_user_supabase)):
+def get_receipt_review(receipt_id: str, request: Request, client: Client = Depends(get_user_supabase)):
     receipt_res = client.table("receipts").select("*").eq("id", receipt_id).execute()
     if not receipt_res.data:
         raise HTTPException(status_code=404, detail="Receipt not found")
@@ -444,7 +450,7 @@ def get_receipt_review(receipt_id: str, client: Client = Depends(get_user_supaba
     return {"receipt": receipt_res.data[0], "items": items_res.data}
 
 @app.post("/api/receipts/{receipt_id}/approve")
-def approve_receipt(receipt_id: str, payload: ApprovalPayload, client: Client = Depends(get_user_supabase)):
+def approve_receipt(receipt_id: str, payload: ApprovalPayload, request: Request, client: Client = Depends(get_user_supabase)):
     receipt_res = client.table("receipts").select("*").eq("id", receipt_id).execute()
     if not receipt_res.data:
         raise HTTPException(status_code=404, detail="Receipt not found")
@@ -558,7 +564,7 @@ async def recipe_feedback(recipe_id: str, payload: RecipeFeedbackRequest, reques
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/recipes/{recipe_id}/cooking-draft")
-async def generate_cooking_draft(recipe_id: str, client: Client = Depends(get_user_supabase)):
+async def generate_cooking_draft(recipe_id: str, request: Request, client: Client = Depends(get_user_supabase)):
     try:
         ingredients_res = client.table("recipe_ingredients").select("*").eq("recipe_id", recipe_id).execute()
         recipe_ingredients = ingredients_res.data

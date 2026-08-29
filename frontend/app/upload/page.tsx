@@ -31,8 +31,8 @@ export default function UploadReceiptPage() {
     formData.append('file', file);
 
     try {
-      // Send the file to your FastAPI backend
-      const response = await fetch('http://localhost:8000/api/receipts', {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const response = await fetch(`${apiUrl}/api/receipts`, {
         method: 'POST',
         body: formData,
       });
