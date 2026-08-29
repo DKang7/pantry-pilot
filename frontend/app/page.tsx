@@ -202,7 +202,7 @@ export default function PantryDashboard() {
           <Link href="/receipts/upload" className="text-blue-600 hover:text-blue-800 text-sm font-semibold">
             📸 Scan Receipt
           </Link>
-          <Link href="/recommendations" className="text-blue-600 hover:text-blue-800 text-sm font-semibold">
+          <Link href="/recipes" className="text-blue-600 hover:text-blue-800 text-sm font-semibold">
             🍳 Find Recipes
           </Link>
           
