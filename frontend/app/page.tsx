@@ -199,14 +199,14 @@ export default function PantryDashboard() {
         
         {/* Navigation & Actions */}
         <div className="flex items-center space-x-6">
-          <Link href="/receipts" className="text-blue-600 hover:text-blue-800 text-sm font-semibold">
+          <Link href="/receipts/upload" className="text-blue-600 hover:text-blue-800 text-sm font-semibold">
             📸 Scan Receipt
           </Link>
-          <Link href="/recipes" className="text-blue-600 hover:text-blue-800 text-sm font-semibold">
+          <Link href="/recommendations" className="text-blue-600 hover:text-blue-800 text-sm font-semibold">
             🍳 Find Recipes
           </Link>
           
-          <div className="border-l border-gray-300 h-6"></div> {/* Visual Divider */}
+          <div className="border-l border-gray-300 h-6"></div>
           
           <button onClick={() => setShowAddModal(true)} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm font-medium">
             + Add Item Manually
