@@ -39,24 +39,24 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">From Receipt to Recipe</h2>
-            <p className="text-gray-500 max-w-xl mx-auto">A seamless workflow powered by Deterministic Logic and AI.</p>
+            <p className="text-gray-500 max-w-xl mx-auto">A seamless workflow that takes the stress out of meal planning.</p>
           </div>
           
           <div className="grid md:grid-cols-3 gap-12">
             <div className="bg-gray-50 p-8 rounded-2xl border border-gray-100 hover:shadow-md transition">
               <div className="text-4xl mb-4">📸</div>
-              <h3 className="text-xl font-bold mb-2">1. Snap & Extract</h3>
-              <p className="text-gray-600 text-sm leading-relaxed">Upload a grocery receipt. Our OCR and LLM pipeline extracts the raw text and standardizes items into a clean, structured draft for your review.</p>
+              <h3 className="text-xl font-bold mb-2">1. Snap a Picture</h3>
+              <p className="text-gray-600 text-sm leading-relaxed">Just upload a photo of your grocery receipt. Our smart AI instantly reads it and creates a clean list of all the ingredients you just bought.</p>
             </div>
             <div className="bg-gray-50 p-8 rounded-2xl border border-gray-100 hover:shadow-md transition">
               <div className="text-4xl mb-4">🛡️</div>
-              <h3 className="text-xl font-bold mb-2">2. Verify & Track</h3>
-              <p className="text-gray-600 text-sm leading-relaxed">Human-in-the-loop review ensures accuracy. Once approved, items are added to your relational database with full transactional safety.</p>
+              <h3 className="text-xl font-bold mb-2">2. Verify Your Pantry</h3>
+              <p className="text-gray-600 text-sm leading-relaxed">Quickly review the list to make sure everything is right. Once you approve it, those items are safely added to your digital pantry.</p>
             </div>
             <div className="bg-gray-50 p-8 rounded-2xl border border-gray-100 hover:shadow-md transition">
               <div className="text-4xl mb-4">🍳</div>
-              <h3 className="text-xl font-bold mb-2">3. Cook & Deduct</h3>
-              <p className="text-gray-600 text-sm leading-relaxed">Find recipes using Semantic Vector Search. Review LLM-grounded explanations, cook the meal, and let the app deduct used ingredients automatically.</p>
+              <h3 className="text-xl font-bold mb-2">3. Get Recipes & Cook</h3>
+              <p className="text-gray-600 text-sm leading-relaxed">Ask the app for meal ideas, and it will find delicious recipes based on what's actually in your kitchen right now. Cook the meal, and your pantry automatically updates!</p>
             </div>
           </div>
         </div>
