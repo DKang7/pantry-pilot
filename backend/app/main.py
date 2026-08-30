@@ -173,7 +173,7 @@ def dependency_health_check():
 
 # --- Recommendations Routes ---
 @app.post("/api/recommendations", response_model=RecommendationResponse)
-async def get_recommendations(request: RecommendationRequest):
+async def get_recommendations(payload: RecommendationRequest, request: Request, client: Client = Depends(get_user_supabase)):
     """Endpoint for returning deterministically ranked and semantically retrieved recipe recommendations."""
     try:
         # Basic MVP Rate Limit: Prevent abuse by checking IP (simplified for this assignment)
@@ -183,25 +183,25 @@ async def get_recommendations(request: RecommendationRequest):
             raise HTTPException(status_code=429, detail="Too many recommendation requests. Try again later.")
         
         # 1. Fetch user's active pantry inventory
-        pantry_res = supabase.table("pantry_items").select("*").eq("status", "active").execute()
+        pantry_res = client.table("pantry_items").select("*").eq("status", "active").execute()
         user_pantry = summarize_pantry(pantry_res.data)
         
         # 2. Fetch all active recipes and format candidates
-        recipes_res = supabase.table("recipes").select("*").eq("status", "active").execute()
-        ingredients_res = supabase.table("recipe_ingredients").select("*").execute()
+        recipes_res = client.table("recipes").select("*").eq("status", "active").execute()
+        ingredients_res = client.table("recipe_ingredients").select("*").execute()
         recipe_candidates = format_recipe_candidates(recipes_res.data, ingredients_res.data)
 
         # 3. Execute Semantic Search (if natural language query provided)
         semantic_scores = {}
         retrieval_mode = "deterministic"
         
-        if request.queryText and request.queryText.strip():
-            semantic_scores = search_recipes_semantically(supabase, request.queryText, limit=20)
+        if payload.queryText and payload.queryText.strip():
+            semantic_scores = search_recipes_semantically(client, payload.queryText, limit=20)
             if semantic_scores:
                 retrieval_mode = "hybrid"
 
         # 4. Get Deterministic Results (This applies your hard filters and calculates scores)
-        deterministic_results = rank_recipes(user_pantry, recipe_candidates, request)
+        deterministic_results = rank_recipes(user_pantry, recipe_candidates, payload)
 
         valid_candidates = []
 
@@ -241,12 +241,12 @@ async def get_recommendations(request: RecommendationRequest):
         sorted_results = sort_hybrid_results(valid_candidates)
         
         # 7. Truncate to the requested limit
-        limit = request.limit if request.limit else 5
+        limit = payload.limit if payload.limit else 5
         final_results = sorted_results[:limit]
 
         # Generate explanations for the top results
         if retrieval_mode == "hybrid" and ENABLE_LLM_EXPLANATIONS:
-            ai_explanations = generate_llm_explanations(final_results, request.queryText)
+            ai_explanations = generate_llm_explanations(final_results, payload.queryText)
             for res in final_results:
                 recipe_id = res.get("recipeId")
                 res["aiExplanation"] = ai_explanations.get(recipe_id, None)
@@ -255,7 +255,7 @@ async def get_recommendations(request: RecommendationRequest):
         return {
             "algorithmVersion": "hybrid-v1",
             "retrievalMode": retrieval_mode,
-            "queryText": request.queryText,
+            "queryText": payload.queryText,
             "pantryItemCount": len(user_pantry.keys()),
             "results": final_results
         }
