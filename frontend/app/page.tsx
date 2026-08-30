@@ -13,7 +13,7 @@ export default function LandingPage() {
             Sign In
           </Link>
           <Link href="/dashboard" className="text-sm font-semibold bg-blue-600 text-white px-5 py-2.5 rounded-full hover:bg-blue-700 transition shadow-sm">
-            Go to App
+            Go to Dashboard
           </Link>
         </div>
       </nav>
@@ -29,7 +29,7 @@ export default function LandingPage() {
         </p>
         <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
           <Link href="/dashboard" className="w-full sm:w-auto text-center font-bold bg-blue-600 text-white px-8 py-4 rounded-full hover:bg-blue-700 transition shadow-lg hover:shadow-xl transform hover:-translate-y-1">
-            Enter Dashboard
+            Go to Dashboard
           </Link>
           <a href="#how-it-works" className="w-full sm:w-auto text-center font-semibold bg-white text-gray-800 border border-gray-200 px-8 py-4 rounded-full hover:bg-gray-50 transition shadow-sm">
             See How It Works ↓
