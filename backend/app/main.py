@@ -418,7 +418,23 @@ async def upload_receipt(request: Request, file: UploadFile = File(...), client:
 
     try:
         img = Image.open(file_path)
-        prompt = """Analyze this grocery receipt... (JSON structure logic)"""
+        prompt = """Analyze this grocery receipt and extract the items into a structured JSON format. 
+Return ONLY valid JSON without any markdown formatting blocks.
+The JSON must follow exactly this schema:
+{
+  "storeName": "Name of the store",
+  "purchaseDate": "YYYY-MM-DD",
+  "total": 123.45,
+  "items": [
+    {
+      "rawText": "exact text from the receipt line",
+      "normalizedName": "clean, generic ingredient name (e.g. 'milk')",
+      "quantity": 1,
+      "unit": "each, lb, oz, etc",
+      "price": 1.99
+    }
+  ]
+}"""
         response = genai_client.models.generate_content(model='gemini-2.5-flash', contents=[prompt, img])
 
         raw_json = response.text.strip()

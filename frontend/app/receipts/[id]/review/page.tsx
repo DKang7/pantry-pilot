@@ -169,13 +169,22 @@ export default function ReviewReceiptPage() {
         <p className="text-sm text-gray-600">
           <strong>{selectedCount}</strong> items selected for addition to pantry.
         </p>
-        <button
-          onClick={handleApprove}
-          disabled={submitting || selectedCount === 0}
-          className="bg-green-600 text-white font-semibold py-2 px-6 rounded hover:bg-green-700 disabled:opacity-50"
-        >
-          {submitting ? 'Adding to Pantry...' : 'Approve & Add to Pantry'}
-        </button>
+        <div className="flex gap-4">
+          <button
+            onClick={() => router.push('/upload')}
+            disabled={submitting}
+            className="bg-gray-200 text-gray-700 font-semibold py-2 px-6 rounded hover:bg-gray-300 disabled:opacity-50"
+          >
+            Cancel & Retake
+          </button>
+          <button
+            onClick={handleApprove}
+            disabled={submitting || selectedCount === 0}
+            className="bg-green-600 text-white font-semibold py-2 px-6 rounded hover:bg-green-700 disabled:opacity-50"
+          >
+            {submitting ? 'Adding to Pantry...' : 'Approve & Add to Pantry'}
+          </button>
+        </div>
       </div>
     </div>
   );
