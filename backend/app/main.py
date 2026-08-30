@@ -400,7 +400,16 @@ async def upload_receipt(request: Request, file: UploadFile = File(...), client:
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
-    new_receipt = {"original_filename": file.filename, "storage_key": secure_filename, "status": "processing"}
+    token = request.headers.get("Authorization", "").replace("Bearer ", "")
+    user_res = client.auth.get_user(token)
+    user_id = user_res.user.id
+
+    new_receipt = {
+        "user_id": user_id,
+        "original_filename": file.filename, 
+        "storage_key": secure_filename, 
+        "status": "processing"
+    }
     db_response = client.table("receipts").insert(new_receipt).execute()
     if not db_response.data:
         raise HTTPException(status_code=500, detail="Failed to create receipt record.")
