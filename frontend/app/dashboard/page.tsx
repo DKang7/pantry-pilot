@@ -227,7 +227,7 @@ export default function PantryDashboard() {
         
         {/* Navigation & Actions */}
         <div className="flex flex-wrap items-center gap-4">
-          <Link href="/receipts/upload" className="text-blue-600 hover:text-blue-800 text-sm font-semibold">
+          <Link href="/upload" className="text-blue-600 hover:text-blue-800 text-sm font-semibold">
             📸 Scan Receipt
           </Link>
           <Link href="/find-recipes" className="text-blue-600 hover:text-blue-800 text-sm font-semibold">

@@ -3,6 +3,7 @@ import hashlib
 from dotenv import load_dotenv
 from supabase import create_client, Client
 from google import genai
+import time
 
 load_dotenv()
 
@@ -108,6 +109,9 @@ def run_embedding_job():
                 supabase.table("recipe_embeddings").insert(data).execute()
                 
             stats["generated"] += 1
+
+            # Respect Gemini Free Tier rate limit (100 per minute)
+            time.sleep(0.7)
             
         except Exception as e:
             print(f"Failed to embed recipe {recipe_id}: {str(e)}")
