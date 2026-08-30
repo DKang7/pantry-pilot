@@ -2,6 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+);
 
 interface DraftItem {
   id: string;
@@ -24,12 +30,20 @@ export default function ReviewReceiptPage() {
   const [purchaseDate, setPurchaseDate] = useState('');
   const [items, setItems] = useState<DraftItem[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [session, setSession] = useState<any>(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => setSession(session));
+  }, []);
 
   useEffect(() => {
     async function fetchReceiptData() {
       try {
+        if (!session) return;
         const apiUrl = process.env.NEXT_PUBLIC_API_URL as string;
-        const res = await fetch(`${apiUrl}/api/receipts/${receiptId}`);
+        const res = await fetch(`${apiUrl}/api/receipts/${receiptId}`, {
+          headers: { 'Authorization': `Bearer ${session.access_token}` }
+        });
         if (!res.ok) throw new Error('Failed to load receipt draft');
         
         const data = await res.json();
@@ -43,8 +57,8 @@ export default function ReviewReceiptPage() {
       }
     }
 
-    if (receiptId) fetchReceiptData();
-  }, [receiptId]);
+    if (receiptId && session) fetchReceiptData();
+  }, [receiptId, session]);
 
   const handleToggleInclude = (index: number) => {
     const updated = [...items];
@@ -66,7 +80,10 @@ export default function ReviewReceiptPage() {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL as string;
       const res = await fetch(`${apiUrl}/api/receipts/${receiptId}/approve`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': session ? `Bearer ${session.access_token}` : ''
+        },
         body: JSON.stringify({ items }),
       });
 
@@ -76,7 +93,7 @@ export default function ReviewReceiptPage() {
       }
 
       // Redirect back to main dashboard upon success
-      router.push('/');
+      router.push('/dashboard');
     } catch (err: any) {
       setError(err.message);
       setSubmitting(false);
