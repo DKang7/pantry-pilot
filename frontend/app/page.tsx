@@ -1,342 +1,110 @@
-'use client';
-
-import { useState, useEffect } from 'react';
-import { createClient } from '@supabase/supabase-js';
 import Link from 'next/link';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-);
-
-type PantryItem = {
-  id: string;
-  name: string;
-  current_quantity: number;
-  unit: string;
-  purchase_date: string;
-  source_type: string;
-};
-
-export default function PantryDashboard() {
-  const [session, setSession] = useState<any>(null);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [authLoading, setAuthLoading] = useState(true);
-
-  const [items, setItems] = useState<PantryItem[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [editingItem, setEditingItem] = useState<PantryItem | null>(null);
-  
-  const [newName, setNewName] = useState('');
-  const [newQuantity, setNewQuantity] = useState('');
-  const [newUnit, setNewUnit] = useState('each');
-  const [newDate, setNewDate] = useState(new Date().toISOString().split('T')[0]);
-  const [editQuantity, setEditQuantity] = useState('');
-  const [editUnit, setEditUnit] = useState('');
-  const [editNote, setEditNote] = useState('');
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setAuthLoading(false);
-    });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  const fetchInventory = async () => {
-    if (!session) return;
-    setLoading(true);
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/inventory`, {
-        headers: { 'Authorization': `Bearer ${session.access_token}` }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setItems(data);
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (session) fetchInventory();
-  }, [session]);
-
-  const handleSignUp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const { error } = await supabase.auth.signUp({ email, password });
-    if (error) alert(error.message);
-    else alert('Success! Check your email.');
-  };
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) alert(error.message);
-  };
-
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    setItems([]);
-  };
-
-  const handleManualAdd = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const payload = {
-      name: newName,
-      quantity: parseFloat(newQuantity),
-      unit: newUnit,
-      category: 'pantry',
-      purchase_date: newDate
-    };
-
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/inventory/manual`, {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${session.access_token}`
-      },
-      body: JSON.stringify(payload)
-    });
-
-    if (response.ok) {
-      setShowAddModal(false);
-      fetchInventory(); 
-      setNewName('');
-      setNewQuantity('');
-      setNewUnit('each');
-      setNewDate(new Date().toISOString().split('T')[0]);
-    }
-  };
-
-  const handleConsume = async (itemId: string, currentQty: number) => {
-    const amountToConsume = currentQty >= 1 ? 1 : currentQty;
-    const payload = { action_type: 'consume', amount: amountToConsume, note: 'Quick consume from dashboard' };
-
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/inventory/${itemId}/action`, {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${session.access_token}`
-      },
-      body: JSON.stringify(payload)
-    });
-
-    if (response.ok) fetchInventory();
-  };
-
-  const handleAdjust = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!editingItem) return;
-
-    const payload = {
-      action_type: 'adjust',
-      amount: parseFloat(editQuantity),
-      unit: editUnit,
-      note: editNote || 'Manual adjustment'
-    };
-
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/inventory/${editingItem.id}/action`, {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${session.access_token}`
-      },
-      body: JSON.stringify(payload)
-    });
-
-    if (response.ok) {
-      setEditingItem(null);
-      fetchInventory();
-    }
-  };
-
-  const handleDelete = async () => {
-    if (!editingItem) return;
-
-    const payload = {
-      action_type: 'adjust',
-      amount: 0,
-      unit: editingItem.unit,
-      note: 'Deleted from dashboard'
-    };
-
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/inventory/${editingItem.id}/action`, {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${session.access_token}`
-      },
-      body: JSON.stringify(payload)
-    });
-
-    if (response.ok) {
-      setEditingItem(null);
-      fetchInventory();
-    }
-  };
-
-  const openEditModal = (item: PantryItem) => {
-    setEditingItem(item);
-    setEditQuantity(item.current_quantity.toString());
-    setEditUnit(item.unit);
-    setEditNote('');
-  };
-
-  if (authLoading) return <div className="p-8 text-center text-gray-500">Loading authentication...</div>;
-
-  if (!session) {
-    return (
-      <div className="max-w-md mx-auto mt-20 p-6 bg-white rounded-lg shadow-md text-black">
-        <h1 className="text-2xl font-bold mb-6 text-center">Welcome to PantryPilot</h1>
-        <form className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Email</label>
-            <input type="email" value={email} onChange={e => setEmail(e.target.value)} className="mt-1 w-full border p-2 rounded" />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Password</label>
-            <input type="password" value={password} onChange={e => setPassword(e.target.value)} className="mt-1 w-full border p-2 rounded" />
-          </div>
-          <div className="flex gap-4 pt-4">
-            <button onClick={handleLogin} className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700 font-medium">Log In</button>
-            <button onClick={handleSignUp} className="flex-1 bg-gray-200 text-gray-800 py-2 rounded hover:bg-gray-300 font-medium">Sign Up</button>
-          </div>
-        </form>
-      </div>
-    );
-  }
-
+export default function LandingPage() {
   return (
-    <div className="max-w-5xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md text-black">
-      <div className="flex justify-between items-center mb-6">
+    <div className="min-h-screen bg-gray-50 text-gray-900 font-sans">
+      {/* Navbar */}
+      <nav className="w-full bg-white shadow-sm py-4 px-6 md:px-12 flex justify-between items-center fixed top-0 z-50">
+        <div className="flex items-center gap-2">
+          <span className="text-2xl font-black text-blue-600 tracking-tighter">PantryPilot</span>
+        </div>
         <div>
-          <h1 className="text-2xl font-bold">PantryPilot Dashboard</h1>
-          <p className="text-sm text-gray-500 mt-1">Logged in as {session.user.email}</p>
-        </div>
-        
-        {/* Navigation & Actions */}
-        <div className="flex items-center space-x-6">
-          <Link href="/receipts/upload" className="text-blue-600 hover:text-blue-800 text-sm font-semibold">
-            📸 Scan Receipt
+          <Link href="/dashboard" className="text-sm font-semibold text-gray-700 hover:text-blue-600 transition mr-6">
+            Sign In
           </Link>
-          <Link href="/find-recipes" className="text-blue-600 hover:text-blue-800 text-sm font-semibold">
-            🍳 Find Recipes
+          <Link href="/dashboard" className="text-sm font-semibold bg-blue-600 text-white px-5 py-2.5 rounded-full hover:bg-blue-700 transition shadow-sm">
+            Go to App
           </Link>
-          
-          <div className="border-l border-gray-300 h-6"></div>
-          
-          <button onClick={() => setShowAddModal(true)} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm font-medium">
-            + Add Item Manually
-          </button>
-          <button onClick={handleSignOut} className="bg-red-50 text-red-600 px-4 py-2 rounded hover:bg-red-100 text-sm font-medium border border-red-200">
-            Log Out
-          </button>
         </div>
-      </div>
+      </nav>
 
-      {loading ? (
-        <div className="p-8 text-center text-gray-500">Loading pantry data...</div>
-      ) : items.length === 0 ? (
-        <div className="text-center p-10 border-2 border-dashed border-gray-300 rounded-lg text-gray-500">
-          Your pantry is currently empty.
+      {/* Hero Section */}
+      <header className="max-w-5xl mx-auto px-6 pt-40 pb-20 md:pt-48 md:pb-32 text-center">
+        <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-gray-900 mb-6 leading-tight">
+          Stop Wasting Groceries. <br className="hidden md:block" />
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">Start Cooking.</span>
+        </h1>
+        <p className="text-lg md:text-xl text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed">
+          PantryPilot is an AI-assisted smart pantry. Snap a picture of your grocery receipt, automatically track your inventory, and get semantically retrieved, grounded recipe recommendations.
+        </p>
+        <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
+          <Link href="/dashboard" className="w-full sm:w-auto text-center font-bold bg-blue-600 text-white px-8 py-4 rounded-full hover:bg-blue-700 transition shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+            Enter Dashboard
+          </Link>
+          <a href="#how-it-works" className="w-full sm:w-auto text-center font-semibold bg-white text-gray-800 border border-gray-200 px-8 py-4 rounded-full hover:bg-gray-50 transition shadow-sm">
+            See How It Works ↓
+          </a>
         </div>
-      ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-gray-100 border-b-2 border-gray-200">
-                <th className="p-3 text-sm font-semibold text-gray-700">Item</th>
-                <th className="p-3 text-sm font-semibold text-gray-700">Quantity</th>
-                <th className="p-3 text-sm font-semibold text-gray-700">Added</th>
-                <th className="p-3 text-sm font-semibold text-gray-700">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {items.map((item) => (
-                <tr key={item.id} className="border-b border-gray-100 hover:bg-gray-50">
-                  <td className="p-3 font-medium text-gray-900">{item.name}</td>
-                  <td className="p-3 text-gray-700">{item.current_quantity} {item.unit}</td>
-                  <td className="p-3 text-gray-700">{item.purchase_date || '-'}</td>
-                  <td className="p-3 space-x-2">
-                    <button onClick={() => handleConsume(item.id, item.current_quantity)} className="text-blue-600 hover:underline text-sm font-medium">Consume 1</button>
-                    <button onClick={() => openEditModal(item)} className="text-gray-500 hover:underline text-sm font-medium">Edit</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+      </header>
 
-      {showAddModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-            <h2 className="text-xl font-bold mb-4">Add Item Manually</h2>
-            <form onSubmit={handleManualAdd} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Item Name</label>
-                <input required type="text" value={newName} onChange={e => setNewName(e.target.value)} className="mt-1 w-full border p-2 rounded" />
-              </div>
-              <div className="flex gap-4">
-                <div className="flex-1">
-                  <label className="block text-sm font-medium text-gray-700">Quantity</label>
-                  <input required type="number" step="0.01" min="0" value={newQuantity} onChange={e => setNewQuantity(e.target.value)} className="mt-1 w-full border p-2 rounded" />
-                </div>
-                <div className="flex-1">
-                  <label className="block text-sm font-medium text-gray-700">Unit</label>
-                  <input required type="text" value={newUnit} onChange={e => setNewUnit(e.target.value)} placeholder="e.g. oz, boxes" className="mt-1 w-full border p-2 rounded" />
-                </div>
-              </div>
-              <div className="flex justify-end gap-2 mt-6">
-                <button type="button" onClick={() => setShowAddModal(false)} className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded">Cancel</button>
-                <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Save Item</button>
-              </div>
-            </form>
+      {/* How it Works Section */}
+      <section id="how-it-works" className="bg-white py-24 border-t border-gray-100">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">From Receipt to Recipe</h2>
+            <p className="text-gray-500 max-w-xl mx-auto">A seamless workflow powered by Deterministic Logic and AI.</p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-12">
+            <div className="bg-gray-50 p-8 rounded-2xl border border-gray-100 hover:shadow-md transition">
+              <div className="text-4xl mb-4">📸</div>
+              <h3 className="text-xl font-bold mb-2">1. Snap & Extract</h3>
+              <p className="text-gray-600 text-sm leading-relaxed">Upload a grocery receipt. Our OCR and LLM pipeline extracts the raw text and standardizes items into a clean, structured draft for your review.</p>
+            </div>
+            <div className="bg-gray-50 p-8 rounded-2xl border border-gray-100 hover:shadow-md transition">
+              <div className="text-4xl mb-4">🛡️</div>
+              <h3 className="text-xl font-bold mb-2">2. Verify & Track</h3>
+              <p className="text-gray-600 text-sm leading-relaxed">Human-in-the-loop review ensures accuracy. Once approved, items are added to your relational database with full transactional safety.</p>
+            </div>
+            <div className="bg-gray-50 p-8 rounded-2xl border border-gray-100 hover:shadow-md transition">
+              <div className="text-4xl mb-4">🍳</div>
+              <h3 className="text-xl font-bold mb-2">3. Cook & Deduct</h3>
+              <p className="text-gray-600 text-sm leading-relaxed">Find recipes using Semantic Vector Search. Review LLM-grounded explanations, cook the meal, and let the app deduct used ingredients automatically.</p>
+            </div>
           </div>
         </div>
-      )}
+      </section>
 
-      {editingItem && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-            <h2 className="text-xl font-bold mb-4">Adjust {editingItem.name}</h2>
-            <form onSubmit={handleAdjust} className="space-y-4">
-              <div className="flex gap-4">
-                <div className="flex-1">
-                  <label className="block text-sm font-medium text-gray-700">New Quantity</label>
-                  <input required type="number" step="0.01" min="0" value={editQuantity} onChange={e => setEditQuantity(e.target.value)} className="mt-1 w-full border p-2 rounded" />
-                </div>
-                <div className="flex-1">
-                  <label className="block text-sm font-medium text-gray-700">Unit</label>
-                  <input required type="text" value={editUnit} onChange={e => setEditUnit(e.target.value)} className="mt-1 w-full border p-2 rounded" />
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Reason for change (optional)</label>
-                <input type="text" value={editNote} onChange={e => setEditNote(e.target.value)} placeholder="e.g. Dropped one, typo" className="mt-1 w-full border p-2 rounded" />
-              </div>
-              <div className="flex justify-between items-center mt-6">
-                <button type="button" onClick={handleDelete} className="px-4 py-2 bg-red-100 text-red-600 hover:bg-red-200 rounded font-medium text-sm">Delete Item</button>
-                <div className="flex gap-2">
-                  <button type="button" onClick={() => setEditingItem(null)} className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded">Cancel</button>
-                  <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Update Item</button>
-                </div>
-              </div>
-            </form>
+      {/* Engineering Highlights */}
+      <section className="py-24 bg-gray-900 text-white">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Engineering Highlights</h2>
+            <p className="text-gray-400 max-w-2xl">Built for reliability, security, and measurable evaluation.</p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-x-12 gap-y-16">
+            <div>
+              <h4 className="text-blue-400 font-bold mb-2 text-lg">Hybrid Recipe Retrieval</h4>
+              <p className="text-gray-300 text-sm leading-relaxed">Combines PostgreSQL deterministic filtering (for hard constraints) with pgvector semantic search to find recipes that maximize your pantry usage without violating constraints.</p>
+            </div>
+            <div>
+              <h4 className="text-blue-400 font-bold mb-2 text-lg">Data Integrity & Security</h4>
+              <p className="text-gray-300 text-sm leading-relaxed">Secured via Supabase Row Level Security (RLS). All inventory updates are executed as safe database transactions. No AI hallucination can directly modify user inventory state.</p>
+            </div>
+            <div>
+              <h4 className="text-blue-400 font-bold mb-2 text-lg">Grounded LLM Explanations</h4>
+              <p className="text-gray-300 text-sm leading-relaxed">AI explanations are strictly grounded in deterministic data. The LLM only receives the verified pantry overlap, ensuring it cannot hallucinate ingredient availability.</p>
+            </div>
+            <div>
+              <h4 className="text-blue-400 font-bold mb-2 text-lg">Resilient Fallbacks</h4>
+              <p className="text-gray-300 text-sm leading-relaxed">Designed for failure. If external LLM or vector APIs timeout or exhaust quotas, the system gracefully degrades to a fully deterministic baseline without breaking the user experience.</p>
+            </div>
           </div>
         </div>
-      )}
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-white py-12 border-t border-gray-200">
+        <div className="max-w-6xl mx-auto px-6 text-center text-gray-500 text-sm">
+          <p className="mb-4">PantryPilot &copy; {new Date().getFullYear()} — Built for Day 15</p>
+          <div className="flex justify-center gap-6">
+            <a href="https://github.com/pantrypilot" className="hover:text-blue-600 transition">GitHub</a>
+            <a href="#" className="hover:text-blue-600 transition">Documentation</a>
+            <a href="#" className="hover:text-blue-600 transition">Evaluations</a>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

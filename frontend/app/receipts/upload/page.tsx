@@ -64,7 +64,7 @@ export default function RecipeFinder() {
     <div className="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md text-black">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Find Recipes</h1>
-        <Link href="/" className="text-gray-500 hover:underline">← Back to Pantry</Link>
+        <Link href="/dashboard" className="text-gray-500 hover:underline">← Back to Pantry</Link>
       </div>
 
       <form onSubmit={searchRecipes} className="flex gap-2 mb-8">
@@ -75,7 +75,7 @@ export default function RecipeFinder() {
           placeholder="e.g., A quick dinner without dairy..." 
           className="flex-1 border p-3 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
         />
-        <Link href="/" className="bg-gray-100 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-200 font-medium border border-gray-300 flex items-center justify-center">
+        <Link href="/dashboard" className="bg-gray-100 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-200 font-medium border border-gray-300 flex items-center justify-center">
           Cancel
         </Link>
         <button type="submit" disabled={loading} className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-medium disabled:opacity-50">

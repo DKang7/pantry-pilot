@@ -81,7 +81,7 @@ export default function RecipeInspector() {
   return (
     <div className="max-w-6xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md text-black flex flex-col">
       <div className="mb-4">
-        <Link href="/" className="text-blue-600 hover:underline text-sm font-semibold">
+        <Link href="/dashboard" className="text-blue-600 hover:underline text-sm font-semibold">
           &larr; Back to Dashboard
         </Link>
       </div>
