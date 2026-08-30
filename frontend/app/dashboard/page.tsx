@@ -219,14 +219,14 @@ export default function PantryDashboard() {
 
   return (
     <div className="max-w-5xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md text-black">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
         <div>
           <h1 className="text-2xl font-bold">PantryPilot Dashboard</h1>
           <p className="text-sm text-gray-500 mt-1">Logged in as {session.user.email}</p>
         </div>
         
         {/* Navigation & Actions */}
-        <div className="flex items-center space-x-6">
+        <div className="flex flex-wrap items-center gap-4">
           <Link href="/receipts/upload" className="text-blue-600 hover:text-blue-800 text-sm font-semibold">
             📸 Scan Receipt
           </Link>
@@ -234,7 +234,7 @@ export default function PantryDashboard() {
             🍳 Find Recipes
           </Link>
           
-          <div className="border-l border-gray-300 h-6"></div>
+          <div className="hidden md:block border-l border-gray-300 h-6"></div>
           
           <button onClick={() => setShowAddModal(true)} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm font-medium">
             + Add Item Manually
@@ -258,7 +258,7 @@ export default function PantryDashboard() {
               <tr className="bg-gray-100 border-b-2 border-gray-200">
                 <th className="p-3 text-sm font-semibold text-gray-700">Item</th>
                 <th className="p-3 text-sm font-semibold text-gray-700">Quantity</th>
-                <th className="p-3 text-sm font-semibold text-gray-700">Added</th>
+                <th className="hidden sm:table-cell p-3 text-sm font-semibold text-gray-700">Added</th>
                 <th className="p-3 text-sm font-semibold text-gray-700">Actions</th>
               </tr>
             </thead>
@@ -267,10 +267,12 @@ export default function PantryDashboard() {
                 <tr key={item.id} className="border-b border-gray-100 hover:bg-gray-50">
                   <td className="p-3 font-medium text-gray-900">{item.name}</td>
                   <td className="p-3 text-gray-700">{item.current_quantity} {item.unit}</td>
-                  <td className="p-3 text-gray-700">{item.purchase_date || '-'}</td>
-                  <td className="p-3 space-x-2">
-                    <button onClick={() => handleConsume(item.id, item.current_quantity)} className="text-blue-600 hover:underline text-sm font-medium">Consume 1</button>
-                    <button onClick={() => openEditModal(item)} className="text-gray-500 hover:underline text-sm font-medium">Edit</button>
+                  <td className="hidden sm:table-cell p-3 text-gray-700">{item.purchase_date || '-'}</td>
+                  <td className="p-3">
+                    <div className="flex flex-wrap gap-3">
+                      <button onClick={() => handleConsume(item.id, item.current_quantity)} className="text-blue-600 hover:underline text-sm font-medium whitespace-nowrap">Consume 1</button>
+                      <button onClick={() => openEditModal(item)} className="text-gray-500 hover:underline text-sm font-medium">Edit</button>
+                    </div>
                   </td>
                 </tr>
               ))}

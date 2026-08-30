@@ -9,11 +9,8 @@ export default function LandingPage() {
           <span className="text-2xl font-black text-blue-600 tracking-tighter">PantryPilot</span>
         </div>
         <div>
-          <Link href="/dashboard" className="text-sm font-semibold text-gray-700 hover:text-blue-600 transition mr-6">
+          <Link href="/dashboard" className="text-sm font-semibold text-gray-700 hover:text-blue-600 transition">
             Sign In
-          </Link>
-          <Link href="/dashboard" className="text-sm font-semibold bg-blue-600 text-white px-5 py-2.5 rounded-full hover:bg-blue-700 transition shadow-sm">
-            Go to Dashboard
           </Link>
         </div>
       </nav>
