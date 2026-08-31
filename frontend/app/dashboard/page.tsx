@@ -55,7 +55,8 @@ export default function PantryDashboard() {
     setLoading(true);
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/inventory`, {
-        headers: { 'Authorization': `Bearer ${session.access_token}` }
+        headers: { 'Authorization': `Bearer ${session.access_token}` },
+        cache: 'no-store'
       });
       if (response.ok) {
         const data = await response.json();
