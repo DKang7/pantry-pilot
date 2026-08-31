@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@supabase/supabase-js';
@@ -71,7 +73,10 @@ export default function UploadReceiptPage() {
 
   return (
     <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md text-black">
-      <h1 className="text-2xl font-bold mb-4">Upload Grocery Receipt</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">Upload Grocery Receipt</h1>
+        <Link href="/dashboard" className="text-gray-500 hover:underline">← Back to Pantry</Link>
+      </div>
       
       <div className="mb-4 border-2 border-dashed border-gray-300 p-6 text-center rounded-lg">
         {!file ? (

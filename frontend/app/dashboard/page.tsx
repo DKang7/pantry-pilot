@@ -76,7 +76,7 @@ export default function PantryDashboard() {
     e.preventDefault();
     const { error } = await supabase.auth.signUp({ email, password });
     if (error) alert(error.message);
-    else alert('Success! Check your email.');
+    else alert('Success! You can now log in. \n\n(Note: If it still says invalid login, you need to turn off "Confirm email" in your Supabase Auth settings!)');
   };
 
   const handleLogin = async (e: React.FormEvent) => {

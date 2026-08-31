@@ -435,7 +435,18 @@ The JSON must follow exactly this schema:
     }
   ]
 }"""
-        response = genai_client.models.generate_content(model='gemini-2.5-flash', contents=[prompt, img])
+        models_to_try = ['gemini-3.5-flash-lite', 'gemini-3.1-flash-lite', 'gemini-2.5-flash-lite']
+        response = None
+        for model_name in models_to_try:
+            try:
+                response = genai_client.models.generate_content(model=model_name, contents=[prompt, img])
+                break
+            except Exception as e:
+                logger.warning(f"Model {model_name} failed: {e}")
+                continue
+        
+        if not response:
+            raise Exception("All fallback models failed to extract receipt.")
 
         raw_json = response.text.strip()
         if raw_json.startswith("```"):
@@ -483,7 +494,7 @@ def approve_receipt(receipt_id: str, payload: ApprovalPayload, request: Request,
         raise HTTPException(status_code=400, detail="This receipt has already been approved.")
 
     pantry_inserts = [
-        {"name": item.normalized_name, "current_quantity": max(1, int(item.quantity)), "category": "pantry",
+        {"user_id": receipt_res.data[0]["user_id"], "name": item.normalized_name, "current_quantity": max(1, int(item.quantity)), "category": "pantry",
          "unit": "each", "source_type": "receipt", "source_receipt_id": receipt_id,
          "purchase_date": receipt_res.data[0].get("purchase_date"), "status": "active"}
         for item in payload.items if item.included and item.normalized_name.strip()
@@ -492,7 +503,7 @@ def approve_receipt(receipt_id: str, payload: ApprovalPayload, request: Request,
     if pantry_inserts:
         insert_res = client.table("pantry_items").insert(pantry_inserts).execute()
         events = [
-            {"pantry_item_id": new_item["id"], "event_type": "purchase", "quantity_delta": new_item["current_quantity"],
+            {"user_id": receipt_res.data[0]["user_id"], "pantry_item_id": new_item["id"], "event_type": "purchase", "quantity_delta": new_item["current_quantity"],
              "quantity_before": 0, "quantity_after": new_item["current_quantity"], "unit": new_item["unit"],
              "note": "Imported from receipt", "source_receipt_id": receipt_id}
             for new_item in insert_res.data
