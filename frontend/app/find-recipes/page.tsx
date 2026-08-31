@@ -17,8 +17,12 @@ export default function FindRecipesPage() {
   const [results, setResults] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [limit, setLimit] = useState(5);
 
-  const handleSearch = async () => {
+  const handleSearch = async (overrideLimit?: number) => {
+    const searchLimit = typeof overrideLimit === 'number' ? overrideLimit : 5;
+    if (typeof overrideLimit !== 'number') setLimit(5);
+    
     setLoading(true);
     setError("");
     setResults(null);
@@ -38,7 +42,7 @@ export default function FindRecipesPage() {
       maxTotalMinutes: maxMinutes ? parseInt(maxMinutes) : null,
       maxMissingIngredients: maxMissing ? parseInt(maxMissing) : null,
       excludeIngredients: exclude ? exclude.split(",").map((s) => s.trim()) : [],
-      limit: 5,
+      limit: searchLimit,
     };
 
     try {
@@ -232,6 +236,22 @@ export default function FindRecipesPage() {
                   </details>
                 </div>
               ))}
+              
+              {results.results.length >= limit && (
+                <div className="mt-8 text-center">
+                  <button
+                    onClick={() => {
+                      const newLimit = limit + 5;
+                      setLimit(newLimit);
+                      handleSearch(newLimit);
+                    }}
+                    disabled={loading}
+                    className="bg-gray-200 text-gray-700 px-8 py-3 rounded-lg font-medium hover:bg-gray-300 disabled:opacity-50 transition"
+                  >
+                    {loading ? "Loading..." : "Load More Recipes ↓"}
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>

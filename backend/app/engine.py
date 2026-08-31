@@ -88,6 +88,11 @@ def format_recipe_candidates(recipes_data: List[dict], ingredients_data: List[di
 
     for r in recipes_data:
         r_id = r["id"]
+        
+        # Skip recipes that have absolutely no cooking information
+        if not r.get("instructions") and not r.get("source_url"):
+            continue
+            
         candidates.append({
             "recipeId": r_id,
             "title": r["title"],
