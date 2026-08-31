@@ -188,8 +188,19 @@ async def get_recommendations(payload: RecommendationRequest, request: Request, 
         
         # 2. Fetch all active recipes and format candidates
         recipes_res = client.table("recipes").select("*").eq("status", "active").execute()
-        ingredients_res = client.table("recipe_ingredients").select("*").execute()
-        recipe_candidates = format_recipe_candidates(recipes_res.data, ingredients_res.data)
+        
+        # Fetch all recipe ingredients (handling Supabase pagination limit of 1000)
+        all_ingredients = []
+        offset = 0
+        page_size = 1000
+        while True:
+            ing_res = client.table("recipe_ingredients").select("*").range(offset, offset + page_size - 1).execute()
+            all_ingredients.extend(ing_res.data)
+            if len(ing_res.data) < page_size:
+                break
+            offset += page_size
+            
+        recipe_candidates = format_recipe_candidates(recipes_res.data, all_ingredients)
 
         # 3. Execute Semantic Search (if natural language query provided)
         semantic_scores = {}

@@ -109,6 +109,9 @@ def rank_recipes(pantry: Dict[str, dict], recipes: List[dict], request: Recommen
         req_ingredients = recipe.get("requiredIngredients", [])
         opt_ingredients = recipe.get("optionalIngredients", [])
         
+        if not req_ingredients:
+            continue
+        
         matched_req = []
         missing_req = []
         assumed_staples_used = []
