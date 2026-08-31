@@ -21,11 +21,15 @@ export default function FindRecipesPage() {
 
   const handleSearch = async (overrideLimit?: number) => {
     const searchLimit = typeof overrideLimit === 'number' ? overrideLimit : 5;
-    if (typeof overrideLimit !== 'number') setLimit(5);
+    const isLoadMore = typeof overrideLimit === 'number';
+    
+    if (!isLoadMore) {
+      setLimit(5);
+      setResults(null);
+    }
     
     setLoading(true);
     setError("");
-    setResults(null);
 
     const { data: { session } } = await supabase.auth.getSession();
     const token = session?.access_token;

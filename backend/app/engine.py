@@ -407,7 +407,7 @@ def fill_missing_instructions_with_llm(final_results: list):
     if not missing:
         return
         
-    prompt = "You are a helpful AI chef. Generate concise, step-by-step cooking instructions (3-4 steps) for the following recipes based on their title and ingredients:\n\n"
+    prompt = "You are a professional chef. Generate detailed, step-by-step cooking instructions for the following recipes based on their title and ingredients. Provide specific cooking techniques, estimated times, and temperatures where applicable to make it easy to follow. YOU MUST format each step as a separate paragraph separated by double newlines (\\n\\n).\n\n"
     for res in missing:
         ingredients = res.get('matchedRequiredIngredients', []) + res.get('missingRequiredIngredients', [])
         prompt += f"- ID: {res['recipeId']}, Title: {res['title']}, Ingredients: {', '.join(ingredients)}\n"
@@ -429,7 +429,7 @@ def fill_missing_instructions_with_llm(final_results: list):
         
         for res in final_results:
             if res["recipeId"] in instructions_map:
-                res["instructions"] = instructions_map[res["recipeId"]] + "\n\n*(AI Generated Instructions)*"
+                res["instructions"] = instructions_map[res["recipeId"]]
                 
     except Exception as e:
         print(f"Failed to generate instructions: {e}")
