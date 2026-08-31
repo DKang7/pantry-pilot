@@ -36,6 +36,12 @@ export default function PantryDashboard() {
   const [editQuantity, setEditQuantity] = useState('');
   const [editUnit, setEditUnit] = useState('');
   const [editNote, setEditNote] = useState('');
+  const [toast, setToast] = useState<{ message: string, undoAction?: () => void } | null>(null);
+
+  const showToast = (message: string, undoAction?: () => void) => {
+    setToast({ message, undoAction });
+    setTimeout(() => setToast(null), 3000);
+  };
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -111,8 +117,29 @@ export default function PantryDashboard() {
     });
 
     if (response.ok) {
+      const resData = await response.json();
+      const addedItem = resData.data;
+
       setShowAddModal(false);
       fetchInventory(); 
+      
+      const qty = parseFloat(newQuantity);
+      const name = newName;
+      
+      showToast(`Added ${qty} ${name}`, async () => {
+         const undoPayload = { action_type: 'consume', amount: qty, note: 'Undo manual add' };
+         await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/inventory/${addedItem.id}/action`, {
+           method: 'POST',
+           headers: { 
+             'Content-Type': 'application/json',
+             'Authorization': `Bearer ${session.access_token}`
+           },
+           body: JSON.stringify(undoPayload)
+         });
+         fetchInventory();
+         setToast(null);
+      });
+
       setNewName('');
       setNewQuantity('');
       setNewUnit('each');
@@ -122,9 +149,18 @@ export default function PantryDashboard() {
 
   const handleConsume = async (itemId: string, currentQty: number) => {
     const amountToConsume = currentQty >= 1 ? 1 : currentQty;
+    
+    // Optimistic UI Update
+    setItems(currentItems => currentItems.map(item => 
+      item.id === itemId 
+        ? { ...item, current_quantity: Math.max(0, item.current_quantity - amountToConsume) }
+        : item
+    ).filter(item => item.current_quantity > 0));
+
     const payload = { action_type: 'consume', amount: amountToConsume, note: 'Quick consume from dashboard' };
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/inventory/${itemId}/action`, {
+    // Fire and forget backend call
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/inventory/${itemId}/action`, {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
@@ -133,7 +169,23 @@ export default function PantryDashboard() {
       body: JSON.stringify(payload)
     });
 
-    if (response.ok) fetchInventory();
+    // Toast and Undo
+    const consumedItem = items.find(i => i.id === itemId);
+    const itemName = consumedItem ? consumedItem.name : "item";
+    
+    showToast(`Consumed ${amountToConsume} ${itemName}`, async () => {
+      const undoPayload = { action_type: 'adjust', amount: currentQty, unit: consumedItem?.unit || 'each', note: 'Undo consume' };
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/inventory/${itemId}/action`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify(undoPayload)
+      });
+      fetchInventory();
+      setToast(null);
+    });
   };
 
   const handleAdjust = async (e: React.FormEvent) => {
@@ -222,28 +274,27 @@ export default function PantryDashboard() {
     <div className="max-w-5xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md text-black">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
         <div>
-          <h1 className="text-2xl font-bold">PantryPilot Dashboard</h1>
+          <div className="flex items-center gap-4">
+            <h1 className="text-2xl font-bold">PantryPilot Dashboard</h1>
+            <button onClick={handleSignOut} className="bg-red-50 text-red-600 px-3 py-1 rounded hover:bg-red-100 text-xs font-medium border border-red-200 transition">
+              Log Out
+            </button>
+          </div>
           <p className="text-sm text-gray-500 mt-1">Logged in as {session.user.email}</p>
         </div>
-        
-        {/* Navigation & Actions */}
-        <div className="flex flex-wrap items-center gap-4">
-          <Link href="/upload" className="text-blue-600 hover:text-blue-800 text-sm font-semibold">
-            📸 Scan Receipt
-          </Link>
-          <Link href="/find-recipes" className="text-blue-600 hover:text-blue-800 text-sm font-semibold">
-            🍳 Find Recipes
-          </Link>
-          
-          <div className="hidden md:block border-l border-gray-300 h-6"></div>
-          
-          <button onClick={() => setShowAddModal(true)} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm font-medium">
-            + Add Item Manually
-          </button>
-          <button onClick={handleSignOut} className="bg-red-50 text-red-600 px-4 py-2 rounded hover:bg-red-100 text-sm font-medium border border-red-200">
-            Log Out
-          </button>
-        </div>
+      </div>
+
+      {/* Navigation & Actions */}
+      <div className="flex flex-wrap items-center gap-4 mb-8 border-b pb-6 border-gray-100">
+        <Link href="/upload" className="bg-blue-50 text-blue-700 px-4 py-2 rounded-lg hover:bg-blue-100 text-sm font-semibold flex items-center transition shadow-sm border border-blue-100">
+          📸 Scan Receipt
+        </Link>
+        <Link href="/find-recipes" className="bg-green-50 text-green-700 px-4 py-2 rounded-lg hover:bg-green-100 text-sm font-semibold flex items-center transition shadow-sm border border-green-100">
+          🍳 Find Recipes
+        </Link>
+        <button onClick={() => setShowAddModal(true)} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm font-medium flex items-center shadow transition ml-auto">
+          + Add Item Manually
+        </button>
       </div>
 
       {loading ? (
@@ -338,6 +389,21 @@ export default function PantryDashboard() {
               </div>
             </form>
           </div>
+        </div>
+      )}
+
+      {/* Toast Notification */}
+      {toast && (
+        <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 bg-gray-900 text-white px-6 py-3 rounded-lg shadow-xl flex items-center gap-4 transition-all">
+          <span className="text-sm font-medium">{toast.message}</span>
+          {toast.undoAction && (
+            <button 
+              onClick={toast.undoAction}
+              className="text-blue-300 hover:text-blue-100 text-sm font-bold uppercase tracking-wide border-l border-gray-600 pl-4"
+            >
+              Undo
+            </button>
+          )}
         </div>
       )}
     </div>
