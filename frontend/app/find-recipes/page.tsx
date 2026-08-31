@@ -34,6 +34,7 @@ export default function FindRecipesPage() {
 
     const requestBody = {
       queryText: queryText.trim() || null,
+      prioritizeIngredients: queryText.trim() ? queryText.split(",").map((s) => s.trim()) : [],
       maxTotalMinutes: maxMinutes ? parseInt(maxMinutes) : null,
       maxMissingIngredients: maxMissing ? parseInt(maxMissing) : null,
       excludeIngredients: exclude ? exclude.split(",").map((s) => s.trim()) : [],
@@ -76,11 +77,11 @@ export default function FindRecipesPage() {
       {/* --- Search Controls --- */}
       <div className="bg-white p-6 rounded-lg shadow mb-8">
         <div className="mb-4">
-          <label className="block text-sm font-medium mb-1">What are you in the mood for?</label>
+          <label className="block text-sm font-medium mb-1">What are you in the mood for, or what ingredients do you want to prioritize?</label>
           <input
             type="text"
             className="w-full border p-2 rounded"
-            placeholder="e.g., Something warm and comforting using rice..."
+            placeholder="e.g., A warm bowl of rice, OR chicken, broccoli, soy sauce"
             value={queryText}
             onChange={(e) => setQueryText(e.target.value)}
           />
@@ -188,8 +189,35 @@ export default function FindRecipesPage() {
                     </div>
                   </div>
 
+                  {/* Instructions / Actions */}
+                  <div className="mt-4 pt-4 border-t flex gap-4 text-sm items-center">
+                    {recipe.instructions ? (
+                      <details className="w-full">
+                        <summary className="cursor-pointer text-blue-600 font-semibold hover:underline">
+                          View Instructions
+                        </summary>
+                        <div className="mt-4 text-gray-700 whitespace-pre-wrap leading-relaxed p-4 bg-white rounded border border-gray-200">
+                          {recipe.instructions}
+                        </div>
+                      </details>
+                    ) : (
+                      <span className="text-gray-400 italic">No instructions available.</span>
+                    )}
+                    
+                    {recipe.sourceUrl && (
+                      <a 
+                        href={recipe.sourceUrl} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="bg-blue-50 text-blue-700 px-4 py-2 rounded-lg font-medium hover:bg-blue-100 flex-shrink-0"
+                      >
+                        Source link ↗
+                      </a>
+                    )}
+                  </div>
+
                   {/* Score Breakdown (Collapsible simulation via details tag) */}
-                  <details className="text-xs text-gray-500 bg-white p-2 rounded border">
+                  <details className="text-xs text-gray-500 bg-white p-2 rounded border mt-4">
                     <summary className="cursor-pointer font-semibold">How this was selected</summary>
                     <div className="mt-2 space-y-1">
                       <p>Deterministic pantry score: {recipe.deterministicScore}</p>

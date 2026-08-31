@@ -245,6 +245,8 @@ async def get_recommendations(payload: RecommendationRequest, request: Request, 
                 "semanticScore": sem_score if retrieval_mode == "hybrid" else None,
                 "hybridScore": hybrid_score,
                 "sourceName": source_name,
+                "sourceUrl": res_dict.get("sourceUrl"),
+                "instructions": res_dict.get("instructions"),
                 "aiExplanation": None # Filled in Step 7
             })
 

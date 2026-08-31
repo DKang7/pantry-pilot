@@ -96,7 +96,9 @@ def format_recipe_candidates(recipes_data: List[dict], ingredients_data: List[di
             "totalMinutes": r.get("total_minutes") or (r.get("prep_minutes") or 0) + (r.get("cook_minutes") or 0),
             "mealTypes": r.get("meal_types", []),
             "dietaryTags": r.get("dietary_tags", []),
-            "sourceName": r.get("source_name")
+            "sourceName": r.get("source_name"),
+            "sourceUrl": r.get("source_url"),
+            "instructions": r.get("instructions")
         })
         
     return candidates

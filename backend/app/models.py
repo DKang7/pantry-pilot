@@ -51,6 +51,8 @@ class RecommendationResult(BaseModel):
     deterministicExplanation: str
     aiExplanation: Optional[str] = None
     sourceName: str
+    sourceUrl: Optional[str] = None
+    instructions: Optional[str] = None
 
 class RecommendationResponse(BaseModel):
     algorithmVersion: str
