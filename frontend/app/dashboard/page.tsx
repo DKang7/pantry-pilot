@@ -174,8 +174,19 @@ export default function PantryDashboard() {
     const itemName = consumedItem ? consumedItem.name : "item";
     
     showToast(`Consumed ${amountToConsume} ${itemName}`, async () => {
+      // Optimistic Undo
+      setItems(currentItems => {
+        const exists = currentItems.find(i => i.id === itemId);
+        if (exists) {
+          return currentItems.map(item => item.id === itemId ? { ...item, current_quantity: currentQty } : item);
+        } else if (consumedItem) {
+          return [...currentItems, { ...consumedItem, current_quantity: currentQty }];
+        }
+        return currentItems;
+      });
+
       const undoPayload = { action_type: 'adjust', amount: currentQty, unit: consumedItem?.unit || 'each', note: 'Undo consume' };
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/inventory/${itemId}/action`, {
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/inventory/${itemId}/action`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -183,7 +194,6 @@ export default function PantryDashboard() {
         },
         body: JSON.stringify(undoPayload)
       });
-      fetchInventory();
       setToast(null);
     });
   };
@@ -292,7 +302,7 @@ export default function PantryDashboard() {
         <Link href="/find-recipes" className="bg-green-50 text-green-700 px-4 py-2 rounded-lg hover:bg-green-100 text-sm font-semibold flex items-center transition shadow-sm border border-green-100">
           🍳 Find Recipes
         </Link>
-        <button onClick={() => setShowAddModal(true)} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm font-medium flex items-center shadow transition ml-auto">
+        <button onClick={() => setShowAddModal(true)} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm font-medium flex items-center shadow transition">
           + Add Item Manually
         </button>
       </div>

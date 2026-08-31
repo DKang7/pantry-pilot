@@ -131,9 +131,17 @@ export default function FindRecipesPage() {
         <button
           onClick={() => handleSearch()}
           disabled={loading}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50 transition min-w-[140px]"
         >
-          {loading ? "Searching..." : "Find Recipes"}
+          {loading && limit === 5 ? (
+            <span className="flex items-center justify-center gap-2">
+              <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Searching...
+            </span>
+          ) : "Find Recipes"}
         </button>
       </div>
 
@@ -250,9 +258,17 @@ export default function FindRecipesPage() {
                       handleSearch(newLimit);
                     }}
                     disabled={loading}
-                    className="bg-gray-200 text-gray-700 px-8 py-3 rounded-lg font-medium hover:bg-gray-300 disabled:opacity-50 transition"
+                    className="bg-gray-200 text-gray-800 px-6 py-2 rounded hover:bg-gray-300 transition font-medium disabled:opacity-50 min-w-[200px]"
                   >
-                    {loading ? "Loading..." : "Load More Recipes ↓"}
+                    {loading ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <svg className="animate-spin h-4 w-4 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Loading More...
+                      </span>
+                    ) : "Load More Recipes ↓"}
                   </button>
                 </div>
               )}
