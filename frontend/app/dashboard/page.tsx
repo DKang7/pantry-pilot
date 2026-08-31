@@ -261,7 +261,9 @@ export default function PantryDashboard() {
   if (!session) {
     return (
       <div className="max-w-md mx-auto mt-20 p-6 bg-white rounded-lg shadow-md text-black">
-        <h1 className="text-2xl font-bold mb-6 text-center">Welcome to PantryPilot</h1>
+        <h1 className="text-2xl font-bold mb-6 text-center">
+          Welcome to <Link href="/" className="font-black text-blue-600 tracking-tighter hover:text-blue-700 transition">PantryPilot</Link>
+        </h1>
         <form className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700">Email</label>
@@ -285,7 +287,9 @@ export default function PantryDashboard() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
         <div>
           <div className="flex items-center gap-4">
-            <h1 className="text-2xl font-bold">PantryPilot Dashboard</h1>
+            <h1 className="text-2xl font-black text-blue-600 tracking-tighter hover:text-blue-700 transition">
+              <Link href="/">PantryPilot</Link>
+            </h1>
             <button onClick={handleSignOut} className="bg-red-50 text-red-600 px-3 py-1 rounded hover:bg-red-100 text-xs font-medium border border-red-200 transition">
               Log Out
             </button>
