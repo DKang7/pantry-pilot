@@ -36,7 +36,8 @@ from app.engine import (
     rank_recipes,                  
     format_recipe_candidates,
     generate_llm_explanations,
-    build_consumption_proposal
+    build_consumption_proposal,
+    fill_missing_instructions_with_llm
 )
 
 # --- Logging Setup ---
@@ -256,6 +257,9 @@ async def get_recommendations(payload: RecommendationRequest, request: Request, 
         # 7. Truncate to the requested limit
         limit = payload.limit if payload.limit else 5
         final_results = sorted_results[:limit]
+        
+        # Generate missing instructions
+        fill_missing_instructions_with_llm(final_results)
 
         # Generate explanations for the top results
         if retrieval_mode == "hybrid" and ENABLE_LLM_EXPLANATIONS:

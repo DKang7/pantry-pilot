@@ -88,10 +88,6 @@ def format_recipe_candidates(recipes_data: List[dict], ingredients_data: List[di
 
     for r in recipes_data:
         r_id = r["id"]
-        
-        # Skip recipes that have absolutely no cooking information
-        if not r.get("instructions") and not r.get("source_url"):
-            continue
             
         candidates.append({
             "recipeId": r_id,
@@ -398,3 +394,42 @@ def build_consumption_proposal(recipe_id: str, recipe_ingredients: list, pantry_
         })
         
     return proposal
+
+class InstructionGeneration(BaseModel):
+    recipeId: str
+    instructions: str
+
+class InstructionResponse(BaseModel):
+    results: List[InstructionGeneration]
+
+def fill_missing_instructions_with_llm(final_results: list):
+    missing = [res for res in final_results if not res.get("instructions")]
+    if not missing:
+        return
+        
+    prompt = "You are a helpful AI chef. Generate concise, step-by-step cooking instructions (3-4 steps) for the following recipes based on their title and ingredients:\n\n"
+    for res in missing:
+        ingredients = res.get('matchedRequiredIngredients', []) + res.get('missingRequiredIngredients', [])
+        prompt += f"- ID: {res['recipeId']}, Title: {res['title']}, Ingredients: {', '.join(ingredients)}\n"
+        
+    prompt += "\nReturn a JSON list of objects with 'recipeId' and 'instructions' string."
+    
+    try:
+        response = genai_client.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=prompt,
+            config={
+                'response_mime_type': 'application/json',
+                'response_schema': InstructionResponse,
+                'temperature': 0.7
+            }
+        )
+        data = json.loads(response.text)
+        instructions_map = {item["recipeId"]: item["instructions"] for item in data.get("results", [])}
+        
+        for res in final_results:
+            if res["recipeId"] in instructions_map:
+                res["instructions"] = instructions_map[res["recipeId"]] + "\n\n*(AI Generated Instructions)*"
+                
+    except Exception as e:
+        print(f"Failed to generate instructions: {e}")
